@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 export function CandidateStatusesSection() {
   const { data: statuses = [], isLoading } = useCandidateStatuses();
