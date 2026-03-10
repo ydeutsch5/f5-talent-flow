@@ -44,7 +44,7 @@ export function JobDetailDrawer({ job, open, onClose, statuses, onUpdate }: JobD
       <div
         className="flex-1 transition-opacity"
         style={{
-          backgroundColor: 'rgba(0,0,0,0.15)',
+          backgroundColor: 'rgba(0,0,0,0.2)',
           opacity: visible ? 1 : 0,
           transitionDuration: '260ms',
         }}
@@ -55,8 +55,8 @@ export function JobDetailDrawer({ job, open, onClose, statuses, onUpdate }: JobD
       <div
         className="flex flex-col bg-white"
         style={{
-          width: '75vw',
-          minWidth: '840px',
+          width: '78vw',
+          minWidth: '1100px',
           maxWidth: '100vw',
           boxShadow: '-8px 0 32px rgba(0,0,0,0.12)',
           transform: visible ? 'translateX(0)' : 'translateX(100%)',
@@ -123,13 +123,13 @@ export function JobDetailDrawer({ job, open, onClose, statuses, onUpdate }: JobD
             {activeTab === "Candidates" && <CandidatesTab jobId={job.id} />}
             {activeTab === "Intelligence" && <IntelligenceTab jobId={job.id} />}
             {activeTab === "Details" && <DetailsTab job={job} statuses={statuses} />}
-            {activeTab === "Activity" && <ActivityFeed jobId={job.id} />}
+            {activeTab === "Activity" && <ActivityFeed jobId={job.id} expanded />}
           </div>
 
-          {/* Right activity panel */}
+          {/* Right activity panel — condensed */}
           <div className="overflow-auto" style={{ flex: '0 0 35%', borderLeft: '1px solid #e9eaec', padding: '16px' }}>
             <p style={{ fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#9ca3af', marginBottom: '12px' }}>Activity</p>
-            <ActivityFeed jobId={job.id} />
+            <ActivityFeed jobId={job.id} showCommentBox={false} condensed />
           </div>
         </div>
       </div>

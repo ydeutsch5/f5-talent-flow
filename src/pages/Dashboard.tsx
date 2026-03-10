@@ -7,6 +7,7 @@ import { useSubmissions } from "@/hooks/useSubmissions";
 import { useRecentActivity, type RecentActivityEntry } from "@/hooks/useRecentActivity";
 import { useUpdateCandidateFull } from "@/hooks/useCandidates";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { mockStore } from "@/lib/mockData";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { CandidateDetailDrawer } from "@/components/candidates/detail/CandidateDetailDrawer";
@@ -136,6 +137,7 @@ export default function Dashboard() {
   const updateCandidate = useUpdateCandidateFull();
   const [drawerCandidate, setDrawerCandidate] = useState<Candidate | null>(null);
 
+  const allMatches = useMemo(() => mockStore.getMatches(), [jobs]);
   const activeJobs = useMemo(() => jobs.filter((j) => j.status === "Active"), [jobs]);
   const onHoldJobs = useMemo(() => jobs.filter((j) => j.status === "On Hold"), [jobs]);
   const newCandidatesThisWeek = useMemo(() => candidates.filter((c) => isThisWeek(c.createdAt)), [candidates]);
@@ -191,8 +193,15 @@ export default function Dashboard() {
               <p style={{ padding: '24px 16px', fontSize: '13px', color: '#9ca3af' }}>No active jobs — create one to get started</p>
             ) : (
               activeJobs.map((job, idx) => {
-                const segs = candidateStatuses.map((cs) => ({ label: cs.label, color: cs.color, count: 0 }));
-                if (segs.length > 0 && job._count.matches > 0) segs[0] = { ...segs[0], count: job._count.matches };
+                // Build segments from actual match data per status
+                const jobMatches = allMatches.filter(m => m.jobId === job.id);
+                const statusCounts = new Map<string, number>();
+                jobMatches.forEach(m => statusCounts.set(m.status, (statusCounts.get(m.status) || 0) + 1));
+                const segs = candidateStatuses
+                  .map(cs => ({ label: cs.label, color: cs.color, count: statusCounts.get(cs.label) || 0 }))
+                  .filter(s => s.count > 0);
+                // If no match data but has count, show a single gray segment
+                if (segs.length === 0 && job._count.matches > 0) segs.push({ label: "Unassigned", color: "#d1d5db", count: job._count.matches });
                 return (
                   <button key={job.id} onClick={() => navigate(`/jobs`)}
                     className="flex items-center w-full gap-4 text-left transition-colors hover:bg-[#f7f8f9]"

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { ArrowLeftRight, MessageSquare, UserPlus, Star, Send as SendIcon } from "lucide-react";
 import { useJobActivity, usePostActivity, type ActivityEntry } from "@/hooks/useJobActivity";
 import { formatDistanceToNow, format } from "date-fns";
@@ -12,23 +12,37 @@ const ICON_MAP: Record<string, { icon: typeof ArrowLeftRight; color: string }> =
   submission: { icon: SendIcon, color: "#c2410c" },
 };
 
-function ActivityItem({ entry }: { entry: ActivityEntry }) {
+function CondensedItem({ entry }: { entry: ActivityEntry }) {
+  const config = ICON_MAP[entry.type] || ICON_MAP.comment;
+  const Icon = config.icon;
+  const truncated = entry.content.length > 45 ? entry.content.slice(0, 45) + "…" : entry.content;
+
+  return (
+    <div className="flex items-center gap-2" style={{ padding: '4px 0' }}>
+      <Icon style={{ width: '12px', height: '12px', color: config.color, flexShrink: 0 }} />
+      <span className="flex-1 truncate" style={{ fontSize: '12px', color: '#374151' }}>{truncated}</span>
+      <span className="shrink-0" style={{ fontSize: '11px', color: '#9ca3af' }}>{formatDistanceToNow(new Date(entry.createdAt), { addSuffix: true })}</span>
+    </div>
+  );
+}
+
+function ExpandedItem({ entry }: { entry: ActivityEntry }) {
   const config = ICON_MAP[entry.type] || ICON_MAP.comment;
   const Icon = config.icon;
 
   return (
-    <div className="flex gap-2.5 py-2">
+    <div className="flex gap-2.5" style={{ padding: '8px 0' }}>
       <div
-        className="h-6 w-6 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+        className="h-7 w-7 rounded-full flex items-center justify-center shrink-0 mt-0.5"
         style={{ backgroundColor: `${config.color}15` }}
       >
-        <Icon className="h-3 w-3" style={{ color: config.color }} />
+        <Icon className="h-3.5 w-3.5" style={{ color: config.color }} />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-foreground">{entry.content}</p>
+        <p style={{ fontSize: '14px', color: '#1a1a1a' }}>{entry.content}</p>
         <Tooltip>
           <TooltipTrigger asChild>
-            <p className="text-xs text-muted-foreground mt-0.5 cursor-default">
+            <p className="cursor-default" style={{ fontSize: '11px', color: '#9ca3af', marginTop: '4px' }}>
               {formatDistanceToNow(new Date(entry.createdAt), { addSuffix: true })}
             </p>
           </TooltipTrigger>
@@ -44,9 +58,11 @@ function ActivityItem({ entry }: { entry: ActivityEntry }) {
 interface ActivityFeedProps {
   jobId: string;
   showCommentBox?: boolean;
+  condensed?: boolean;
+  expanded?: boolean;
 }
 
-export function ActivityFeed({ jobId, showCommentBox = true }: ActivityFeedProps) {
+export function ActivityFeed({ jobId, showCommentBox = true, condensed = false, expanded = false }: ActivityFeedProps) {
   const { data: entries, isLoading } = useJobActivity(jobId);
   const postActivity = usePostActivity();
   const [comment, setComment] = useState("");
@@ -66,46 +82,52 @@ export function ActivityFeed({ jobId, showCommentBox = true }: ActivityFeedProps
           <div className="space-y-3 animate-pulse">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="flex gap-2">
-                <div className="h-6 w-6 bg-muted rounded-full" />
+                <div style={{ width: condensed ? '12px' : '24px', height: condensed ? '12px' : '24px', borderRadius: '50%', backgroundColor: '#f3f4f6' }} />
                 <div className="flex-1 space-y-1">
-                  <div className="h-3 bg-muted rounded w-3/4" />
-                  <div className="h-2.5 bg-muted rounded w-16" />
+                  <div style={{ height: '10px', backgroundColor: '#f3f4f6', borderRadius: '3px', width: '75%' }} />
+                  <div style={{ height: '8px', backgroundColor: '#f3f4f6', borderRadius: '3px', width: '40px' }} />
                 </div>
               </div>
             ))}
           </div>
         )}
         {entries?.map((entry) => (
-          <ActivityItem key={entry.id} entry={entry} />
+          condensed
+            ? <CondensedItem key={entry.id} entry={entry} />
+            : <ExpandedItem key={entry.id} entry={entry} />
         ))}
         {!isLoading && (!entries || entries.length === 0) && (
-          <p className="text-xs text-muted-foreground text-center py-8">No activity yet</p>
+          <p style={{ fontSize: condensed ? '11px' : '13px', color: '#9ca3af', textAlign: 'center', padding: condensed ? '16px 0' : '32px 0' }}>No activity yet</p>
         )}
         <div ref={bottomRef} />
       </div>
 
-      {showCommentBox && (
-        <div className="px-4 py-2 border-t border-border flex gap-2">
-          <textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handlePost();
-              }
-            }}
-            placeholder="Add a comment…"
-            rows={1}
-            className="flex-1 resize-none rounded-md border border-input bg-background px-2.5 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-          />
-          <button
-            onClick={handlePost}
-            disabled={!comment.trim() || postActivity.isPending}
-            className="h-8 px-3 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 transition-opacity duration-fast disabled:opacity-50 shrink-0 self-end"
-          >
-            Post
-          </button>
+      {showCommentBox && !condensed && (
+        <div className="px-4 py-2 border-t" style={{ borderColor: '#e9eaec' }}>
+          <div className="flex gap-2">
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handlePost();
+                }
+              }}
+              placeholder="Add a comment…"
+              rows={1}
+              style={{ flex: 1, resize: 'none', borderRadius: '6px', border: '1px solid #e2e3e6', padding: '6px 10px', fontSize: '13px', color: '#1a1a1a' }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = '#7c3aed'; e.currentTarget.style.boxShadow = '0 0 0 3px #7c3aed18'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = '#e2e3e6'; e.currentTarget.style.boxShadow = 'none'; }}
+            />
+            <button
+              onClick={handlePost}
+              disabled={!comment.trim() || postActivity.isPending}
+              style={{ height: '32px', padding: '0 12px', borderRadius: '6px', backgroundColor: '#7c3aed', color: '#ffffff', fontSize: '13px', fontWeight: 500, opacity: !comment.trim() ? 0.5 : 1 }}
+            >
+              Post
+            </button>
+          </div>
         </div>
       )}
     </div>
