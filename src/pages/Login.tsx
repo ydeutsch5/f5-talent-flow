@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
-import { api } from "@/lib/api";
+
 
 const DEMO_USER = {
   id: "demo-admin-001",
