@@ -1,7 +1,8 @@
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { useState, useEffect } from "react";
+import { X } from "lucide-react";
 import { useCreateCandidateFull } from "@/hooks/useCandidates";
 import { toast } from "sonner";
 
@@ -24,14 +25,16 @@ interface AddCandidateDrawerProps {
 
 export function AddCandidateDrawer({ open, onClose }: AddCandidateDrawerProps) {
   const create = useCreateCandidateFull();
-  const {
-    register, handleSubmit, control, reset, formState: { errors },
-  } = useForm<FormValues>({
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (open) requestAnimationFrame(() => setVisible(true));
+    else setVisible(false);
+  }, [open]);
+
+  const { register, handleSubmit, control, reset, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      name: "", email: "", phone: "", title: "", source: "",
-      shiftAvailability: "REGULAR", communicationRating: "GOOD",
-    },
+    defaultValues: { name: "", email: "", phone: "", title: "", source: "", shiftAvailability: "REGULAR", communicationRating: "GOOD" },
   });
 
   const onSubmit = async (data: FormValues) => {
@@ -45,84 +48,89 @@ export function AddCandidateDrawer({ open, onClose }: AddCandidateDrawerProps) {
     }
   };
 
-  const inputCls = "w-full h-9 px-3 rounded-md border border-input bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring transition-colors duration-fast";
-  const labelCls = "block text-sm font-medium text-foreground mb-1";
-  const errorCls = "text-xs text-destructive mt-0.5";
+  if (!open) return null;
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%', height: '32px', border: '1px solid #e2e3e6', borderRadius: '6px', fontSize: '13px', color: '#1a1a1a', padding: '0 10px', background: '#ffffff',
+  };
+  const labelStyle: React.CSSProperties = { display: 'block', fontSize: '12px', fontWeight: 500, color: '#374151', marginBottom: '4px' };
+  const errorStyle: React.CSSProperties = { fontSize: '11px', color: '#dc2626', marginTop: '3px' };
 
   return (
-    <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
-      <SheetContent side="right" className="w-[480px] sm:max-w-[480px] p-0 flex flex-col">
-        <SheetHeader className="px-6 pt-6 pb-4 border-b border-border">
-          <SheetTitle className="text-lg font-semibold">Add Candidate</SheetTitle>
-          <SheetDescription className="sr-only">Create a new candidate</SheetDescription>
-        </SheetHeader>
+    <div className="fixed inset-0 z-50 flex justify-end">
+      <div className="flex-1 transition-opacity" style={{ backgroundColor: 'rgba(0,0,0,0.15)', opacity: visible ? 1 : 0, transitionDuration: '260ms' }} onClick={onClose} />
+      <div className="flex flex-col bg-white" style={{ width: '480px', maxWidth: '100%', boxShadow: '-8px 0 32px rgba(0,0,0,0.12)', transform: visible ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 260ms cubic-bezier(0.32,0.72,0,1)' }}>
+        <div className="flex items-center justify-between shrink-0" style={{ height: '56px', borderBottom: '1px solid #e9eaec', padding: '0 20px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#1a1a1a' }}>Add Candidate</h2>
+          <button onClick={onClose} className="rounded-md flex items-center justify-center transition-colors hover:bg-[#f3f4f6]" style={{ width: '28px', height: '28px', color: '#6b7280' }}>
+            <X style={{ width: '20px', height: '20px' }} />
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col overflow-y-auto">
-          <div className="flex-1 px-6 py-4 space-y-4">
-            <div>
-              <label className={labelCls}>Name *</label>
-              <input {...register("name")} className={inputCls} placeholder="Full name" />
-              {errors.name && <p className={errorCls}>{errors.name.message}</p>}
-            </div>
-            <div>
-              <label className={labelCls}>Email *</label>
-              <input {...register("email")} type="email" className={inputCls} placeholder="email@example.com" />
-              {errors.email && <p className={errorCls}>{errors.email.message}</p>}
-            </div>
-            <div>
-              <label className={labelCls}>Phone</label>
-              <input {...register("phone")} className={inputCls} placeholder="+1 (555) 123-4567" />
-            </div>
-            <div>
-              <label className={labelCls}>Title</label>
-              <input {...register("title")} className={inputCls} placeholder="e.g. Senior React Developer" />
-            </div>
-            <div>
-              <label className={labelCls}>Source</label>
-              <input {...register("source")} className={inputCls} placeholder="e.g. LinkedIn, Referral" />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+          <div className="flex-1" style={{ padding: '16px 20px' }}>
+            <div className="space-y-4">
               <div>
-                <label className={labelCls}>Shift Availability</label>
-                <Controller
-                  control={control}
-                  name="shiftAvailability"
-                  render={({ field }) => (
-                    <select {...field} className={inputCls}>
-                      <option value="REGULAR">Regular</option>
-                      <option value="US_SHIFT">US Shift</option>
-                      <option value="BOTH">Both</option>
-                    </select>
-                  )}
+                <label style={labelStyle}>Name *</label>
+                <input {...register("name")} style={inputStyle} placeholder="Full name"
+                  onFocus={(e) => { e.currentTarget.style.borderColor = '#7c3aed'; e.currentTarget.style.boxShadow = '0 0 0 3px #7c3aed18'; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = '#e2e3e6'; e.currentTarget.style.boxShadow = 'none'; }}
+                />
+                {errors.name && <p style={errorStyle}>{errors.name.message}</p>}
+              </div>
+              <div>
+                <label style={labelStyle}>Email *</label>
+                <input {...register("email")} type="email" style={inputStyle} placeholder="email@example.com"
+                  onFocus={(e) => { e.currentTarget.style.borderColor = '#7c3aed'; e.currentTarget.style.boxShadow = '0 0 0 3px #7c3aed18'; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = '#e2e3e6'; e.currentTarget.style.boxShadow = 'none'; }}
+                />
+                {errors.email && <p style={errorStyle}>{errors.email.message}</p>}
+              </div>
+              <div>
+                <label style={labelStyle}>Phone</label>
+                <input {...register("phone")} style={inputStyle} placeholder="+1 (555) 123-4567"
+                  onFocus={(e) => { e.currentTarget.style.borderColor = '#7c3aed'; e.currentTarget.style.boxShadow = '0 0 0 3px #7c3aed18'; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = '#e2e3e6'; e.currentTarget.style.boxShadow = 'none'; }}
                 />
               </div>
               <div>
-                <label className={labelCls}>Communication</label>
-                <Controller
-                  control={control}
-                  name="communicationRating"
-                  render={({ field }) => (
-                    <select {...field} className={inputCls}>
-                      <option value="EXCELLENT">Excellent</option>
-                      <option value="GOOD">Good</option>
-                      <option value="AVERAGE">Average</option>
-                      <option value="POOR">Poor</option>
-                    </select>
-                  )}
+                <label style={labelStyle}>Title</label>
+                <input {...register("title")} style={inputStyle} placeholder="e.g. Senior React Developer"
+                  onFocus={(e) => { e.currentTarget.style.borderColor = '#7c3aed'; e.currentTarget.style.boxShadow = '0 0 0 3px #7c3aed18'; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = '#e2e3e6'; e.currentTarget.style.boxShadow = 'none'; }}
                 />
+              </div>
+              <div>
+                <label style={labelStyle}>Source</label>
+                <input {...register("source")} style={inputStyle} placeholder="e.g. LinkedIn, Referral"
+                  onFocus={(e) => { e.currentTarget.style.borderColor = '#7c3aed'; e.currentTarget.style.boxShadow = '0 0 0 3px #7c3aed18'; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = '#e2e3e6'; e.currentTarget.style.boxShadow = 'none'; }}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label style={labelStyle}>Shift Availability</label>
+                  <Controller control={control} name="shiftAvailability" render={({ field }) => (
+                    <select {...field} style={inputStyle}><option value="REGULAR">Regular</option><option value="US_SHIFT">US Shift</option><option value="BOTH">Both</option></select>
+                  )} />
+                </div>
+                <div>
+                  <label style={labelStyle}>Communication</label>
+                  <Controller control={control} name="communicationRating" render={({ field }) => (
+                    <select {...field} style={inputStyle}><option value="EXCELLENT">Excellent</option><option value="GOOD">Good</option><option value="AVERAGE">Average</option><option value="POOR">Poor</option></select>
+                  )} />
+                </div>
               </div>
             </div>
           </div>
-          <div className="px-6 py-4 border-t border-border">
-            <button
-              type="submit"
-              disabled={create.isPending}
-              className="w-full h-9 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity duration-fast disabled:opacity-50"
-            >
+          <div style={{ padding: '12px 20px', borderTop: '1px solid #e9eaec' }}>
+            <button type="submit" disabled={create.isPending}
+              style={{ width: '100%', height: '28px', borderRadius: '6px', backgroundColor: '#7c3aed', color: '#ffffff', fontSize: '13px', fontWeight: 500, opacity: create.isPending ? 0.5 : 1 }}>
               {create.isPending ? "Adding…" : "Add Candidate"}
             </button>
           </div>
         </form>
-      </SheetContent>
-    </Sheet>
+      </div>
+    </div>
   );
 }

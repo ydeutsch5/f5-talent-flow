@@ -9,15 +9,23 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group"
       toastOptions={{
         duration: 3000,
+        style: {
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+          fontSize: '13px',
+          color: '#1a1a1a',
+          background: '#ffffff',
+          border: '1px solid #e9eaec',
+          boxShadow: 'none',
+          borderRadius: '6px',
+        },
         classNames: {
-          toast:
-            "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-none",
-          description: "group-[.toast]:text-muted-foreground",
-          actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
-          cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
-          error: "group-[.toaster]:!bg-destructive group-[.toaster]:!text-destructive-foreground group-[.toaster]:!border-destructive",
-          success: "group-[.toaster]:!border-[#22c55e]/30",
-          info: "group-[.toaster]:!border-[#3b82f6]/30",
+          toast: "group toast",
+          description: "text-[#9ca3af]",
+          actionButton: "bg-[#7c3aed] text-white",
+          cancelButton: "bg-[#f3f4f6] text-[#374151]",
+          error: "!border-l-[3px] !border-l-[#dc2626]",
+          success: "!border-l-[3px] !border-l-[#16a34a]",
+          info: "!border-l-[3px] !border-l-[#3b82f6]",
         },
       }}
       {...props}

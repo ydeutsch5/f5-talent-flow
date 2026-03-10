@@ -12,8 +12,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        mono: ["Roboto Mono", "monospace"],
+        sans: ["'Inter'", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -51,7 +50,6 @@ export default {
         },
         "sidebar-bg": "hsl(var(--sidebar-bg))",
         "sidebar-fg": "hsl(var(--sidebar-fg))",
-        "sidebar-hover": "hsl(var(--sidebar-hover))",
         "row-hover": "hsl(var(--row-hover))",
       },
       borderRadius: {
@@ -63,8 +61,8 @@ export default {
         fast: "150ms",
       },
       spacing: {
-        "sidebar": "224px",
-        "row": "36px",
+        sidebar: "240px",
+        row: "34px",
       },
       keyframes: {
         "accordion-down": {

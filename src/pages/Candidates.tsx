@@ -70,58 +70,83 @@ export default function Candidates() {
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="flex items-center justify-between px-6 h-14 border-b border-border shrink-0">
-        <h1 className="text-lg font-bold text-foreground">Candidates</h1>
-        <button onClick={() => setAddDrawerOpen(true)} className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity duration-fast">
-          <Plus className="h-3.5 w-3.5" /> Add Candidate
-        </button>
+      {/* Top bar */}
+      <div className="flex items-center justify-between shrink-0" style={{ height: '48px', borderBottom: '1px solid #e9eaec', padding: '0 20px' }}>
+        <h1 style={{ fontSize: '16px', fontWeight: 600, color: '#1a1a1a' }}>Candidates</h1>
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2" style={{ width: '14px', height: '14px', color: '#9ca3af' }} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search…"
+              style={{ height: '28px', width: '180px', paddingLeft: '28px', paddingRight: '8px', borderRadius: '6px', border: '1px solid #e2e3e6', fontSize: '13px', color: '#1a1a1a' }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = '#7c3aed'; e.currentTarget.style.boxShadow = '0 0 0 3px #7c3aed18'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = '#e2e3e6'; e.currentTarget.style.boxShadow = 'none'; }}
+            />
+          </div>
+          <button
+            onClick={() => setAddDrawerOpen(true)}
+            className="inline-flex items-center gap-1.5 transition-colors"
+            style={{ height: '28px', padding: '0 12px', borderRadius: '6px', backgroundColor: '#7c3aed', color: '#ffffff', fontSize: '13px', fontWeight: 500 }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#6d28d9'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#7c3aed'; }}
+          >
+            <Plus style={{ width: '14px', height: '14px' }} /> Add Candidate
+          </button>
+        </div>
       </div>
 
-      <div className="flex items-center gap-2 px-6 h-10 border-b border-border shrink-0 overflow-x-auto">
-        <button onClick={() => setFilterStatus(null)} className={`inline-flex items-center gap-1.5 h-6 px-2.5 rounded-full text-xs font-medium transition-colors duration-fast border shrink-0 ${filterStatus === null ? "bg-foreground text-background border-foreground" : "bg-transparent text-muted-foreground border-border hover:bg-muted"}`}>All</button>
+      {/* Filter bar */}
+      <div className="flex items-center gap-2 shrink-0 overflow-x-auto" style={{ height: '40px', borderBottom: '1px solid #e9eaec', padding: '0 20px' }}>
+        <button
+          onClick={() => setFilterStatus(null)}
+          className="inline-flex items-center rounded-md transition-colors shrink-0"
+          style={{ height: '28px', padding: '0 10px', fontSize: '13px', fontWeight: 500, border: '1px solid #e2e3e6', backgroundColor: filterStatus === null ? '#f3f4f6' : 'transparent', color: filterStatus === null ? '#1a1a1a' : '#374151' }}
+        >
+          All
+        </button>
         {statuses?.map((s) => (
           <button key={s.id} onClick={() => setFilterStatus(filterStatus === s.label ? null : s.label)}
-            className={`inline-flex items-center gap-1.5 h-6 px-2.5 rounded-full text-xs font-medium transition-colors duration-fast border shrink-0 ${filterStatus === s.label ? "border-current" : "bg-transparent border-border hover:bg-muted"}`}
-            style={{ color: filterStatus === s.label ? s.color : undefined, borderColor: filterStatus === s.label ? s.color : undefined }}>
-            <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: s.color }} />{s.label}
+            className="inline-flex items-center gap-1.5 rounded-md transition-colors shrink-0"
+            style={{ height: '28px', padding: '0 10px', fontSize: '13px', fontWeight: 500, border: filterStatus === s.label ? `1px solid ${s.color}` : '1px solid #e2e3e6', backgroundColor: filterStatus === s.label ? `${s.color}15` : 'transparent', color: filterStatus === s.label ? s.color : '#374151' }}>
+            <span className="rounded-full shrink-0" style={{ width: '8px', height: '8px', backgroundColor: s.color }} />{s.label}
           </button>
         ))}
-        <div className="h-4 w-px bg-border shrink-0 mx-1" />
-        <button onClick={() => setFilterComm(null)} className={`inline-flex items-center h-6 px-2 rounded-full text-xs font-medium transition-colors duration-fast border shrink-0 ${filterComm === null ? "bg-muted text-foreground border-muted" : "bg-transparent text-muted-foreground border-border hover:bg-muted"}`}>All Comm</button>
+        <div className="shrink-0" style={{ width: '1px', height: '16px', backgroundColor: '#e9eaec', margin: '0 4px' }} />
         {COMM_OPTIONS.map((opt) => {
           const cc = getCommColor(opt);
           return (
             <button key={opt} onClick={() => setFilterComm(filterComm === opt ? null : opt)}
-              className={`inline-flex items-center h-6 px-2 rounded-full text-xs font-medium transition-colors duration-fast border shrink-0 ${filterComm === opt ? "" : "bg-transparent border-border hover:bg-muted"}`}
-              style={filterComm === opt ? { backgroundColor: cc.bg, color: cc.text, borderColor: cc.text } : {}}>
+              className="inline-flex items-center rounded-md transition-colors shrink-0"
+              style={{ height: '28px', padding: '0 10px', fontSize: '13px', fontWeight: 500, border: filterComm === opt ? `1px solid ${cc.text}` : '1px solid #e2e3e6', backgroundColor: filterComm === opt ? cc.bg : 'transparent', color: filterComm === opt ? cc.text : '#374151' }}>
               {commLabel(opt)}
             </button>
           );
         })}
-        <div className="ml-auto relative shrink-0">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search…"
-            className="h-7 w-44 pl-7 pr-2 rounded-md border border-input bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring transition-colors duration-fast" />
-        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto">
         {isLoading && (
           <div className="animate-pulse">
+            <div className="flex items-center" style={{ height: '32px', padding: '0 8px' }}>
+              <div className="h-3 rounded" style={{ width: '180px', backgroundColor: '#f3f4f6' }} />
+            </div>
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-row border-b border-border flex items-center gap-4 px-6">
-                <div className="h-3 bg-muted rounded w-32" /><div className="h-4 bg-muted rounded-full w-16" /><div className="h-3 bg-muted rounded w-14" /><div className="h-3 bg-muted rounded w-10" />
+              <div key={i} className="grid items-center" style={{ gridTemplateColumns: "28px 1fr 110px 90px 80px minmax(120px,1fr) 60px 80px 32px", height: '34px', borderBottom: '1px solid #f3f4f6', padding: '0 8px' }}>
+                <div /><div className="space-y-1 pr-4 pl-3"><div className="h-3 rounded" style={{ width: '60%', backgroundColor: '#f3f4f6' }} /><div className="h-2 rounded" style={{ width: '40%', backgroundColor: '#f3f4f6' }} /></div><div><div className="h-5 rounded-full" style={{ width: '56px', backgroundColor: '#f3f4f6' }} /></div><div><div className="h-4 rounded-full" style={{ width: '48px', backgroundColor: '#f3f4f6' }} /></div><div><div className="h-4 rounded-full" style={{ width: '40px', backgroundColor: '#f3f4f6' }} /></div><div /><div /><div /><div />
               </div>
             ))}
           </div>
         )}
         {isEmpty && !isLoading && (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            <Users className="h-12 w-12 text-muted-foreground/40 mb-3" />
-            <p className="text-lg font-medium text-foreground mb-1">No candidates yet</p>
-            <p className="text-sm text-muted-foreground mb-4">Add your first candidate to start building your pipeline</p>
-            <button onClick={() => setAddDrawerOpen(true)} className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity duration-fast">
-              <Plus className="h-3.5 w-3.5" /> Add Candidate
+          <div className="flex flex-col items-center justify-center h-full text-center" style={{ padding: '48px 0' }}>
+            <Users style={{ width: '48px', height: '48px', color: '#d1d5db' }} />
+            <p style={{ fontSize: '16px', fontWeight: 600, color: '#374151', marginTop: '16px' }}>No candidates yet</p>
+            <p style={{ fontSize: '13px', color: '#9ca3af', marginTop: '6px', maxWidth: '320px' }}>Add your first candidate to start building your pipeline</p>
+            <button onClick={() => setAddDrawerOpen(true)} className="inline-flex items-center gap-1.5 transition-colors" style={{ height: '28px', padding: '0 12px', borderRadius: '6px', backgroundColor: '#7c3aed', color: '#ffffff', fontSize: '13px', fontWeight: 500, marginTop: '20px' }}>
+              <Plus style={{ width: '14px', height: '14px' }} /> Add Candidate
             </button>
           </div>
         )}
@@ -131,29 +156,24 @@ export default function Candidates() {
       </div>
 
       {selectedIds.size > 0 && (
-        <div className="flex items-center gap-3 px-6 h-11 border-t border-border bg-muted/50 shrink-0">
-          <span className="text-sm text-muted-foreground">{selectedIds.size} selected</span>
+        <div className="flex items-center gap-3 shrink-0" style={{ height: '40px', borderTop: '1px solid #e9eaec', padding: '0 20px', backgroundColor: '#f9fafb' }}>
+          <span style={{ fontSize: '13px', color: '#9ca3af' }}>{selectedIds.size} selected</span>
           <Popover open={bulkStatusOpen} onOpenChange={setBulkStatusOpen}>
             <PopoverTrigger asChild>
-              <button className="h-7 px-2.5 rounded-md border border-border text-xs font-medium text-foreground hover:bg-muted transition-colors duration-fast">Change Status</button>
+              <button style={{ height: '28px', padding: '0 10px', borderRadius: '6px', border: '1px solid #e2e3e6', fontSize: '13px', color: '#374151', fontWeight: 500 }}>Change Status</button>
             </PopoverTrigger>
             <PopoverContent className="w-44 p-1" align="start">
               {statuses?.map((s) => (
-                <button key={s.id} onClick={() => {
-                  bulkUpdate.mutate({ ids: [...selectedIds], data: { status: s.label } }, {
-                    onSuccess: () => toast.success(`${selectedIds.size} candidates updated`),
-                  });
-                  setBulkStatusOpen(false);
-                  setSelectedIds(new Set());
-                }} className="flex items-center gap-2 w-full px-2.5 py-1.5 text-sm rounded-sm hover:bg-muted/60 transition-colors duration-fast text-foreground">
-                  <span className="h-2.5 w-2.5 rounded shrink-0" style={{ backgroundColor: s.color }} />{s.label}
+                <button key={s.id} onClick={() => { bulkUpdate.mutate({ ids: [...selectedIds], data: { status: s.label } }, { onSuccess: () => toast.success(`${selectedIds.size} candidates updated`) }); setBulkStatusOpen(false); setSelectedIds(new Set()); }}
+                  className="flex items-center gap-2 w-full px-2 py-1.5 rounded-[5px] transition-colors hover:bg-[#f3f4f6]" style={{ fontSize: '13px', color: '#1a1a1a' }}>
+                  <span className="shrink-0" style={{ width: '12px', height: '12px', borderRadius: '3px', backgroundColor: s.color }} />{s.label}
                 </button>
               ))}
             </PopoverContent>
           </Popover>
           <TagBulkPicker candidateIds={[...selectedIds]} onDone={() => setSelectedIds(new Set())} />
-          <button onClick={() => setBulkDeleteOpen(true)} className="h-7 px-2.5 rounded-md border border-destructive text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors duration-fast">Delete</button>
-          <button onClick={() => setSelectedIds(new Set())} className="text-xs text-primary hover:underline ml-auto">Clear</button>
+          <button onClick={() => setBulkDeleteOpen(true)} style={{ height: '28px', padding: '0 10px', borderRadius: '6px', border: '1px solid #dc2626', fontSize: '13px', color: '#dc2626', fontWeight: 500 }}>Delete</button>
+          <button onClick={() => setSelectedIds(new Set())} className="ml-auto" style={{ fontSize: '13px', color: '#7c3aed', cursor: 'pointer' }}>Clear</button>
         </div>
       )}
 
@@ -168,14 +188,7 @@ export default function Candidates() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => {
-              const count = selectedIds.size;
-              bulkDelete.mutate([...selectedIds], {
-                onSuccess: () => toast.success(`${count} candidates deleted`),
-              });
-              setSelectedIds(new Set());
-              setBulkDeleteOpen(false);
-            }} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+            <AlertDialogAction onClick={() => { const count = selectedIds.size; bulkDelete.mutate([...selectedIds], { onSuccess: () => toast.success(`${count} candidates deleted`) }); setSelectedIds(new Set()); setBulkDeleteOpen(false); }} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

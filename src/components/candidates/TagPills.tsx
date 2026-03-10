@@ -34,19 +34,14 @@ export function TagPills({ candidateId, tags, maxVisible = 3 }: TagPillsProps) {
   const showCreate = search.trim() && filtered.length === 0;
 
   const handleToggleTag = (tagId: string) => {
-    if (appliedIds.has(tagId)) {
-      removeTag.mutate({ candidateId, tagId });
-    } else {
-      addTag.mutate({ candidateId, tagId });
-    }
+    if (appliedIds.has(tagId)) removeTag.mutate({ candidateId, tagId });
+    else addTag.mutate({ candidateId, tagId });
   };
 
   const handleCreate = async () => {
     const color = TAG_PALETTE[Math.floor(Math.random() * TAG_PALETTE.length)];
     const newTag = await createTag.mutateAsync({ name: search.trim(), color });
-    if (newTag?.id) {
-      addTag.mutate({ candidateId, tagId: newTag.id });
-    }
+    if (newTag?.id) addTag.mutate({ candidateId, tagId: newTag.id });
     setSearch("");
   };
 
@@ -55,21 +50,24 @@ export function TagPills({ candidateId, tags, maxVisible = 3 }: TagPillsProps) {
       {visibleTags.map((tag) => (
         <span
           key={tag.id}
-          className="group/tag inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-xs font-medium cursor-default"
+          className="group/tag inline-flex items-center rounded-full cursor-default"
           style={{
-            backgroundColor: `${tag.color}33`,
+            padding: '2px 7px',
+            fontSize: '11px',
+            fontWeight: 500,
+            backgroundColor: `${tag.color}22`,
             color: tag.color,
+            border: `1px solid ${tag.color}40`,
+            gap: '3px',
           }}
         >
           {tag.name}
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              removeTag.mutate({ candidateId, tagId: tag.id });
-            }}
-            className="opacity-0 group-hover/tag:opacity-100 transition-opacity duration-fast ml-0.5 hover:opacity-80"
+            onClick={(e) => { e.stopPropagation(); removeTag.mutate({ candidateId, tagId: tag.id }); }}
+            className="opacity-0 group-hover/tag:opacity-100 transition-opacity"
+            style={{ marginLeft: '2px', color: tag.color }}
           >
-            <X className="h-3 w-3" />
+            <X style={{ width: '10px', height: '10px' }} />
           </button>
         </span>
       ))}
@@ -79,9 +77,10 @@ export function TagPills({ candidateId, tags, maxVisible = 3 }: TagPillsProps) {
           <PopoverTrigger asChild>
             <button
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center rounded-full px-1.5 py-0.5 text-xs text-muted-foreground bg-muted hover:bg-muted/80 transition-colors duration-fast"
+              className="inline-flex items-center rounded-full transition-colors hover:bg-[#f3f4f6]"
+              style={{ padding: '2px 6px', fontSize: '11px', color: '#9ca3af', backgroundColor: '#f3f4f6' }}
             >
-              +{extraCount} more
+              +{extraCount}
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-48 p-2" align="start" onClick={(e) => e.stopPropagation()}>
@@ -89,15 +88,12 @@ export function TagPills({ candidateId, tags, maxVisible = 3 }: TagPillsProps) {
               {tags.slice(maxVisible).map((tag) => (
                 <span
                   key={tag.id}
-                  className="group/tag inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-xs font-medium"
-                  style={{ backgroundColor: `${tag.color}33`, color: tag.color }}
+                  className="group/tag inline-flex items-center rounded-full"
+                  style={{ padding: '2px 7px', fontSize: '11px', fontWeight: 500, backgroundColor: `${tag.color}22`, color: tag.color, border: `1px solid ${tag.color}40`, gap: '3px' }}
                 >
                   {tag.name}
-                  <button
-                    onClick={() => removeTag.mutate({ candidateId, tagId: tag.id })}
-                    className="opacity-0 group-hover/tag:opacity-100 transition-opacity duration-fast ml-0.5"
-                  >
-                    <X className="h-3 w-3" />
+                  <button onClick={() => removeTag.mutate({ candidateId, tagId: tag.id })} className="opacity-0 group-hover/tag:opacity-100 transition-opacity" style={{ color: tag.color }}>
+                    <X style={{ width: '10px', height: '10px' }} />
                   </button>
                 </span>
               ))}
@@ -111,37 +107,55 @@ export function TagPills({ candidateId, tags, maxVisible = 3 }: TagPillsProps) {
         <PopoverTrigger asChild>
           <button
             onClick={(e) => e.stopPropagation()}
-            className="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-xs text-muted-foreground border border-dashed border-border hover:border-muted-foreground hover:text-foreground transition-colors duration-fast"
+            className="inline-flex items-center gap-1 rounded-full transition-colors"
+            style={{
+              padding: '2px 7px',
+              fontSize: '11px',
+              color: '#9ca3af',
+              border: '1px dashed #d1d5db',
+              background: 'transparent',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f3f4f6'; e.currentTarget.style.borderColor = '#9ca3af'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.borderColor = '#d1d5db'; }}
           >
-            <Plus className="h-3 w-3" /> Tag
+            <Plus style={{ width: '10px', height: '10px' }} /> Tag
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-52 p-0" align="start" sideOffset={4} onClick={(e) => e.stopPropagation()}>
+        <PopoverContent
+          className="p-0"
+          align="start"
+          sideOffset={4}
+          onClick={(e) => e.stopPropagation()}
+          style={{ width: '240px', borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}
+        >
           {/* Search */}
-          <div className="px-2 pt-2 pb-1">
+          <div style={{ borderBottom: '1px solid #e9eaec' }}>
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search or create…"
-              className="w-full h-7 px-2 rounded border border-input bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+              placeholder="Search tags..."
+              style={{ width: '100%', height: '32px', padding: '0 10px', fontSize: '13px', border: 'none', outline: 'none', background: 'transparent', color: '#1a1a1a' }}
               autoFocus
             />
           </div>
 
           {/* Tag list */}
-          <div className="max-h-48 overflow-y-auto px-1 pb-1">
+          <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
             {filtered.map((tag) => {
               const applied = appliedIds.has(tag.id);
               return (
                 <button
                   key={tag.id}
                   onClick={() => handleToggleTag(tag.id)}
-                  className={`flex items-center gap-2 w-full px-2 py-1.5 text-sm rounded-sm transition-colors duration-fast text-foreground ${applied ? "bg-muted" : "hover:bg-muted/60"}`}
+                  className="flex items-center gap-2 w-full px-2.5 rounded-[5px] transition-colors hover:bg-[#f3f4f6]"
+                  style={{ height: '28px', margin: '1px 4px', width: 'calc(100% - 8px)' }}
                 >
-                  <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: tag.color }} />
-                  <span className="flex-1 text-left truncate">{tag.name}</span>
-                  {applied && <span className="text-xs text-primary">✓</span>}
+                  <span className="inline-flex items-center rounded-full shrink-0" style={{ padding: '1px 6px', fontSize: '10px', fontWeight: 500, backgroundColor: `${tag.color}22`, color: tag.color, border: `1px solid ${tag.color}40` }}>
+                    {tag.name}
+                  </span>
+                  <span style={{ flex: 1, textAlign: 'left', fontSize: '13px', color: '#1a1a1a' }}>{tag.name}</span>
+                  {applied && <span style={{ color: '#7c3aed', fontSize: '12px' }}>✓</span>}
                 </button>
               );
             })}
@@ -149,15 +163,16 @@ export function TagPills({ candidateId, tags, maxVisible = 3 }: TagPillsProps) {
             {showCreate && (
               <button
                 onClick={handleCreate}
-                className="flex items-center gap-2 w-full px-2 py-1.5 text-sm rounded-sm text-primary hover:bg-muted/60 transition-colors duration-fast"
+                className="flex items-center gap-2 w-full px-2.5 rounded-[5px] transition-colors hover:bg-[#f3f4f6]"
+                style={{ height: '28px', margin: '1px 4px', width: 'calc(100% - 8px)' }}
               >
-                <Plus className="h-3.5 w-3.5" />
-                Create "{search.trim()}"
+                <Plus style={{ width: '14px', height: '14px', color: '#7c3aed' }} />
+                <span style={{ fontSize: '13px', color: '#7c3aed' }}>Create "{search.trim()}"</span>
               </button>
             )}
 
             {!showCreate && filtered.length === 0 && (
-              <p className="text-xs text-muted-foreground text-center py-3">No tags found</p>
+              <p className="text-center" style={{ fontSize: '11px', color: '#9ca3af', padding: '12px' }}>No tags found</p>
             )}
           </div>
         </PopoverContent>

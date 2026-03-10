@@ -24,17 +24,31 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh)]">
-      <nav className="w-[200px] shrink-0 bg-secondary border-r border-border py-4 px-2">
-        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-2">Settings</h3>
+    <div className="flex h-screen">
+      <nav className="shrink-0" style={{ width: '200px', backgroundColor: '#f9fafb', borderRight: '1px solid #e9eaec', padding: '16px 8px' }}>
+        <h3 style={{ fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#9ca3af', padding: '0 12px', marginBottom: '8px' }}>Settings</h3>
         {SECTIONS.map(({ key, label }) => (
-          <button key={key} onClick={() => setActive(key)}
-            className={`w-full text-left text-sm px-3 py-2 rounded-md transition-colors ${active === key ? "border-l-[3px] border-primary text-primary font-medium bg-primary/5 -ml-[3px] pl-[calc(0.75rem+3px)]" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
+          <button
+            key={key}
+            onClick={() => setActive(key)}
+            className="w-full text-left rounded-[5px] transition-colors"
+            style={{
+              fontSize: '13px',
+              padding: '6px 12px',
+              marginBottom: '1px',
+              fontWeight: active === key ? 600 : 400,
+              color: active === key ? '#1a1a1a' : '#6b7280',
+              backgroundColor: active === key ? '#ffffff' : 'transparent',
+              boxShadow: active === key ? 'inset 2px 0 0 #7c3aed' : 'none',
+            }}
+            onMouseEnter={(e) => { if (active !== key) e.currentTarget.style.backgroundColor = '#f3f4f6'; }}
+            onMouseLeave={(e) => { if (active !== key) e.currentTarget.style.backgroundColor = 'transparent'; }}
+          >
             {label}
           </button>
         ))}
       </nav>
-      <div className="flex-1 overflow-y-auto p-8 max-w-4xl">
+      <div className="flex-1 overflow-y-auto" style={{ padding: '24px 32px', maxWidth: '800px' }}>
         {active === "statuses" && <CandidateStatusesSection />}
         {active === "tags" && <TagsSection />}
         {active === "team" && <TeamMembersSection />}

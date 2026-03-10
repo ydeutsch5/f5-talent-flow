@@ -17,6 +17,7 @@ export function InlineEdit({
 }: InlineEditProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
+  const [saving, setSaving] = useState<"saving" | "saved" | null>(null);
   const ref = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -27,11 +28,21 @@ export function InlineEdit({
     if (editing) ref.current?.focus();
   }, [editing]);
 
+  useEffect(() => {
+    if (saving === "saved") {
+      const t = setTimeout(() => setSaving(null), 1500);
+      return () => clearTimeout(t);
+    }
+  }, [saving]);
+
   const save = useCallback(() => {
     setEditing(false);
     const trimmed = draft.trim();
     if (trimmed && trimmed !== value) {
+      setSaving("saving");
       onSave(trimmed);
+      // Simulate brief save state
+      setTimeout(() => setSaving("saved"), 200);
     } else {
       setDraft(value);
     }
@@ -55,15 +66,25 @@ export function InlineEdit({
 
   if (!editing) {
     return (
-      <span
-        className={`cursor-pointer hover:bg-muted/60 rounded px-1 -mx-1 transition-colors duration-fast ${className}`}
-        onClick={(e) => {
-          e.stopPropagation();
-          setEditing(true);
-        }}
-        title="Click to edit"
-      >
-        {value || "—"}
+      <span className="relative inline-flex items-center">
+        <span
+          className={`cursor-text rounded px-0.5 -mx-0.5 transition-colors hover:bg-[#f7f8f9] ${className}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            setEditing(true);
+          }}
+          style={{ borderBottom: '1px dotted transparent' }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderBottomColor = '#d1d5db'; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderBottomColor = 'transparent'; }}
+          title="Click to edit"
+        >
+          {value || "—"}
+        </span>
+        {saving && (
+          <span className="ml-1.5" style={{ fontSize: '10px', color: saving === 'saved' ? '#16a34a' : '#9ca3af' }}>
+            {saving === 'saving' ? 'Saving...' : 'Saved ✓'}
+          </span>
+        )}
       </span>
     );
   }
@@ -76,7 +97,13 @@ export function InlineEdit({
     onBlur: save,
     onKeyDown: handleKeyDown,
     onClick: (e: React.MouseEvent) => e.stopPropagation(),
-    className: `bg-background border border-input rounded px-1.5 py-0.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring -mx-1 ${inputClassName}`,
+    className: `bg-white rounded px-1.5 py-0.5 text-[13px] -mx-0.5 ${inputClassName}`,
+    style: {
+      color: '#1a1a1a',
+      border: 'none',
+      boxShadow: '0 0 0 2px #7c3aed40',
+      outline: 'none',
+    },
   };
 
   if (as === "textarea") {

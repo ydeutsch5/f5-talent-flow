@@ -9,7 +9,6 @@ export function AppLayout() {
 
   useGlobalShortcuts();
 
-  // Close mobile sidebar on resize to desktop
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
     const handler = () => { if (mq.matches) setMobileOpen(false); };
@@ -27,24 +26,27 @@ export function AppLayout() {
       {/* Mobile overlay sidebar */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-foreground/30" onClick={() => setMobileOpen(false)} />
+          <div className="absolute inset-0" style={{ backgroundColor: 'rgba(0,0,0,0.15)' }} onClick={() => setMobileOpen(false)} />
           <div className="relative w-sidebar h-full">
             <AppSidebar onClose={() => setMobileOpen(false)} />
           </div>
         </div>
       )}
 
-      <main className="flex-1 lg:ml-sidebar overflow-auto">
+      <main className="flex-1 lg:ml-sidebar overflow-auto bg-white">
         {/* Mobile hamburger */}
-        <div className="lg:hidden flex items-center h-12 px-4 border-b border-border">
+        <div className="lg:hidden flex items-center h-12 px-4" style={{ borderBottom: '1px solid #e9eaec' }}>
           <button
             onClick={() => setMobileOpen(true)}
-            className="h-8 w-8 rounded flex items-center justify-center text-foreground hover:bg-muted transition-colors"
+            className="h-7 w-7 rounded-md flex items-center justify-center hover:bg-[#f3f4f6] transition-colors"
+            style={{ color: '#6b7280' }}
           >
             <Menu className="h-5 w-5" />
           </button>
-          <span className="ml-2 text-sm font-bold text-primary">F5</span>
-          <span className="text-sm font-semibold text-foreground ml-1">Hiring</span>
+          <div className="h-7 w-7 rounded-md flex items-center justify-center ml-2 shrink-0" style={{ backgroundColor: '#7c3aed' }}>
+            <span className="text-white text-xs font-bold">F5</span>
+          </div>
+          <span className="text-[13px] font-medium ml-1.5" style={{ color: '#1a1a1a' }}>F5 Hiring</span>
         </div>
         <Outlet />
       </main>

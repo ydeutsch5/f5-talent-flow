@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -21,7 +21,7 @@
     --secondary: 220 13% 95%;
     --secondary-foreground: 0 0% 10%;
 
-    --muted: 220 13% 95%;
+    --muted: 220 14% 96%;
     --muted-foreground: 220 9% 46%;
 
     --accent: 263 70% 50%;
@@ -30,22 +30,20 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
+    --border: 220 9% 91%;
+    --input: 220 9% 89%;
     --ring: 263 70% 50%;
 
     --radius: 0.375rem;
 
-    /* Sidebar — #1e1f21 */
+    /* Sidebar */
     --sidebar-bg: 240 3% 12.5%;
     --sidebar-fg: 0 0% 100%;
-    --sidebar-hover: 240 3% 16%;
-    --sidebar-active-bg: 263 70% 50% / 0.05;
-    --sidebar-active-border: 263 70% 50%;
+    --sidebar-hover: 0 0% 100%;
 
     /* Data density */
-    --row-height: 36px;
-    --row-hover: 210 20% 98%;
+    --row-height: 34px;
+    --row-hover: 220 14% 97%;
 
     /* Transitions */
     --transition-fast: 150ms ease;
@@ -57,6 +55,30 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  /* Scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 100px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
+
+  /* Global input focus */
+  input:focus, textarea:focus, select:focus {
+    outline: none;
   }
 }
