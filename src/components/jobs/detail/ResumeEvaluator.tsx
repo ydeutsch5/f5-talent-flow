@@ -59,7 +59,7 @@ export function ResumeEvaluator({ jobId }: ResumeEvaluatorProps) {
         matchPercentage: result!.matchPercentage,
         matchBand: result!.matchBand,
       });
-      toast({ title: "Candidate added", description: `${editName} has been added to the pipeline.` });
+      toast.success("Candidate added");
       setResult(null);
       setExpanded(false);
     } catch (err: any) {
