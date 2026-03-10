@@ -29,39 +29,48 @@ export function CandidatesTab({ jobId }: CandidatesTabProps) {
   };
 
   const handleRemove = (matchId: string) => {
-    // Could be a DELETE endpoint - using update to set inactive for now
     updateMatch.mutate({ id: matchId, data: { status: "Removed" } });
   };
 
   const handleViewProfile = (candidateId: string) => {
-    // TODO: Open candidate detail drawer
     console.log("View profile", candidateId);
   };
+
+  const viewBtnStyle = (active: boolean): React.CSSProperties => ({
+    height: '28px',
+    padding: '0 10px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    fontSize: '12px',
+    fontWeight: 500,
+    color: active ? '#1a1a1a' : '#9ca3af',
+    backgroundColor: active ? '#f3f4f6' : 'transparent',
+    transition: 'all 150ms ease',
+  });
 
   return (
     <div className="flex flex-col h-full">
       {/* Controls */}
-      <div className="flex items-center justify-between px-4 h-10 border-b border-border shrink-0">
+      <div className="flex items-center justify-between shrink-0" style={{ height: '40px', padding: '0 20px', borderBottom: '1px solid #e9eaec' }}>
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-foreground">Candidates</span>
+          <span style={{ fontSize: '13px', fontWeight: 600, color: '#1a1a1a' }}>Candidates</span>
           {matches && (
-            <span className="inline-flex items-center justify-center h-5 min-w-[20px] rounded-full bg-muted text-xs text-muted-foreground px-1.5">
+            <span className="inline-flex items-center justify-center rounded-full" style={{ height: '20px', minWidth: '20px', padding: '0 6px', fontSize: '11px', fontWeight: 600, backgroundColor: '#f3f4f6', color: '#6b7280' }}>
               {matches.length}
             </span>
           )}
         </div>
-        <div className="flex items-center border border-border rounded-md overflow-hidden">
-          <button
-            onClick={() => setView("list")}
-            className={`h-7 px-2.5 flex items-center gap-1 text-xs font-medium transition-colors duration-fast ${view === "list" ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted/50"}`}
-          >
-            <List className="h-3.5 w-3.5" /> List
+        <div className="flex items-center overflow-hidden" style={{ border: '1px solid #e2e3e6', borderRadius: '6px' }}>
+          <button onClick={() => setView("list")} style={viewBtnStyle(view === "list")}
+            onMouseEnter={(e) => { if (view !== "list") e.currentTarget.style.backgroundColor = '#f9fafb'; }}
+            onMouseLeave={(e) => { if (view !== "list") e.currentTarget.style.backgroundColor = 'transparent'; }}>
+            <List style={{ width: '14px', height: '14px' }} /> List
           </button>
-          <button
-            onClick={() => setView("kanban")}
-            className={`h-7 px-2.5 flex items-center gap-1 text-xs font-medium transition-colors duration-fast ${view === "kanban" ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted/50"}`}
-          >
-            <LayoutGrid className="h-3.5 w-3.5" /> Kanban
+          <button onClick={() => setView("kanban")} style={viewBtnStyle(view === "kanban")}
+            onMouseEnter={(e) => { if (view !== "kanban") e.currentTarget.style.backgroundColor = '#f9fafb'; }}
+            onMouseLeave={(e) => { if (view !== "kanban") e.currentTarget.style.backgroundColor = 'transparent'; }}>
+            <LayoutGrid style={{ width: '14px', height: '14px' }} /> Kanban
           </button>
         </div>
       </div>
@@ -69,22 +78,22 @@ export function CandidatesTab({ jobId }: CandidatesTabProps) {
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
         {isLoading && (
-          <div className="animate-pulse px-3">
+          <div className="animate-pulse" style={{ padding: '0 12px' }}>
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-row border-b border-border flex items-center gap-4 px-3">
-                <div className="h-3 bg-muted rounded w-32" />
-                <div className="h-4 bg-muted rounded-full w-16" />
-                <div className="h-3 bg-muted rounded w-10" />
+              <div key={i} className="flex items-center gap-4" style={{ height: '34px', borderBottom: '1px solid #f3f4f6', padding: '0 12px' }}>
+                <div style={{ width: '120px', height: '10px', backgroundColor: '#f3f4f6', borderRadius: '3px' }} />
+                <div style={{ width: '48px', height: '20px', backgroundColor: '#f3f4f6', borderRadius: '100px' }} />
+                <div style={{ width: '40px', height: '10px', backgroundColor: '#f3f4f6', borderRadius: '3px' }} />
               </div>
             ))}
           </div>
         )}
 
         {isEmpty && (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <Users className="h-10 w-10 text-muted-foreground/40 mb-2" />
-            <p className="text-sm font-medium text-foreground mb-0.5">No candidates matched</p>
-            <p className="text-xs text-muted-foreground">Evaluate resumes below to add candidates</p>
+          <div className="flex flex-col items-center justify-center text-center" style={{ padding: '48px 20px' }}>
+            <Users style={{ width: '32px', height: '32px', color: '#d1d5db' }} />
+            <p style={{ fontSize: '14px', fontWeight: 600, color: '#374151', marginTop: '12px' }}>No candidates matched</p>
+            <p style={{ fontSize: '13px', color: '#9ca3af', marginTop: '4px' }}>Evaluate resumes below to add candidates</p>
           </div>
         )}
 

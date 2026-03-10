@@ -59,9 +59,11 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 13px;
     line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Scrollbars */
+  /* ClickUp-style thin scrollbars */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -77,8 +79,14 @@
     background: #9ca3af;
   }
 
-  /* Global input focus */
+  /* Global input focus reset */
   input:focus, textarea:focus, select:focus {
     outline: none;
+  }
+
+  /* Consistent selection color */
+  ::selection {
+    background: #7c3aed30;
+    color: #1a1a1a;
   }
 }

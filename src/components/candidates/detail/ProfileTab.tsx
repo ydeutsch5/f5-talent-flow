@@ -7,14 +7,28 @@ import type { Candidate } from "@/hooks/useCandidates";
 import type { CandidateStatus } from "@/hooks/useCandidateStatuses";
 import { getCommColor, commLabel, COMM_OPTIONS } from "@/components/jobs/detail/matchUtils";
 import { useUpdateCandidateFull } from "@/hooks/useCandidates";
+import { useNavigate } from "react-router-dom";
 
-const SHIFT_LABELS: Record<string, string> = { REGULAR: "Regular", US_SHIFT: "US Shift", BOTH: "Both" };
+const SHIFT_LABELS: Record<string, { label: string; bg: string; color: string; border: string }> = {
+  REGULAR: { label: "Regular", bg: "#f3f4f6", color: "#374151", border: "#e5e7eb" },
+  US_SHIFT: { label: "US Shift", bg: "#ede9fe", color: "#6d28d9", border: "#ddd6fe" },
+  BOTH: { label: "Both", bg: "#e0f2fe", color: "#0369a1", border: "#bae6fd" },
+};
 const SHIFT_OPTIONS = ["REGULAR", "US_SHIFT", "BOTH"] as const;
 
 function SaveIndicator({ status }: { status: "idle" | "saved" | "error" }) {
-  if (status === "saved") return <span className="inline-flex items-center gap-0.5 text-xs ml-2" style={{ color: "#15803d" }}><Check className="h-3 w-3" /> Saved</span>;
-  if (status === "error") return <span className="inline-flex items-center gap-0.5 text-xs text-destructive ml-2"><AlertCircle className="h-3 w-3" /> Failed</span>;
+  if (status === "saved") return <span className="inline-flex items-center gap-0.5 ml-2" style={{ fontSize: '10px', color: "#16a34a" }}><Check style={{ width: '10px', height: '10px' }} /> Saved</span>;
+  if (status === "error") return <span className="inline-flex items-center gap-0.5 ml-2" style={{ fontSize: '10px', color: "#dc2626" }}><AlertCircle style={{ width: '10px', height: '10px' }} /> Failed</span>;
   return null;
+}
+
+function FieldLabel({ children, saveState }: { children: React.ReactNode; saveState?: "idle" | "saved" | "error" }) {
+  return (
+    <p className="flex items-center" style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280', marginBottom: '8px' }}>
+      {children}
+      {saveState && <SaveIndicator status={saveState} />}
+    </p>
+  );
 }
 
 interface ProfileTabProps {
@@ -36,99 +50,105 @@ export function ProfileTab({ candidate, statuses }: ProfileTabProps) {
     }
   }, [candidate.id, update]);
 
-  const label = "text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center";
   const statusObj = statuses.find((s) => s.label === candidate.status);
   const statusColor = statusObj?.color || "#6b7280";
-  const cc = getCommColor(candidate.communicationRating);
 
   return (
-    <div className="p-4 overflow-y-auto space-y-6">
-      <div className="grid grid-cols-2 gap-x-6 gap-y-5">
+    <div style={{ padding: '20px', overflow: 'auto' }}>
+      {/* Info Grid */}
+      <div className="grid grid-cols-2" style={{ gap: '20px 32px' }}>
         <div>
-          <p className={label}>Name <SaveIndicator status={saves["name"] || "idle"} /></p>
-          <InlineEdit value={candidate.name} onSave={(v) => handleSave("name", v)} className="text-sm text-foreground" />
+          <FieldLabel saveState={saves["name"]}>Name</FieldLabel>
+          <InlineEdit value={candidate.name} onSave={(v) => handleSave("name", v)} className="text-[13px]" />
         </div>
         <div>
-          <p className={label}>Shift Availability <SaveIndicator status={saves["shiftAvailability"] || "idle"} /></p>
-          <ShiftPicker value={candidate.shiftAvailability} onSave={(v) => handleSave("shiftAvailability", v)} />
+          <FieldLabel saveState={saves["status"]}>Status</FieldLabel>
+          <StatusPicker current={candidate.status} color={statusColor} statuses={statuses} onSave={(v) => handleSave("status", v)} />
         </div>
 
         <div>
-          <p className={label}>Email <SaveIndicator status={saves["email"] || "idle"} /></p>
-          <InlineEdit value={candidate.email} onSave={(v) => handleSave("email", v)} className="text-sm text-foreground" />
+          <FieldLabel saveState={saves["email"]}>Email</FieldLabel>
+          <InlineEdit value={candidate.email} onSave={(v) => handleSave("email", v)} className="text-[13px]" />
         </div>
         <div>
-          <p className={label}>Communication <SaveIndicator status={saves["communicationRating"] || "idle"} /></p>
+          <FieldLabel saveState={saves["communicationRating"]}>Communication</FieldLabel>
           <CommPicker value={candidate.communicationRating} onSave={(v) => handleSave("communicationRating", v)} />
         </div>
 
         <div>
-          <p className={label}>Phone <SaveIndicator status={saves["phone"] || "idle"} /></p>
-          <InlineEdit value={candidate.phone || "—"} onSave={(v) => handleSave("phone", v === "—" ? null : v)} className="text-sm text-foreground" />
+          <FieldLabel saveState={saves["phone"]}>Phone</FieldLabel>
+          <InlineEdit value={candidate.phone || "—"} onSave={(v) => handleSave("phone", v === "—" ? null : v)} className="text-[13px]" />
         </div>
         <div>
-          <p className={label}>Status <SaveIndicator status={saves["status"] || "idle"} /></p>
-          <StatusPicker current={candidate.status} statuses={statuses} onSave={(v) => handleSave("status", v)} />
+          <FieldLabel saveState={saves["shiftAvailability"]}>Shift Availability</FieldLabel>
+          <ShiftPicker value={candidate.shiftAvailability} onSave={(v) => handleSave("shiftAvailability", v)} />
         </div>
 
         <div>
-          <p className={label}>Title <SaveIndicator status={saves["title"] || "idle"} /></p>
-          <InlineEdit value={candidate.title || "—"} onSave={(v) => handleSave("title", v === "—" ? null : v)} className="text-sm text-foreground" />
+          <FieldLabel saveState={saves["title"]}>Title</FieldLabel>
+          <InlineEdit value={candidate.title || "—"} onSave={(v) => handleSave("title", v === "—" ? null : v)} className="text-[13px]" />
         </div>
         <div>
-          <p className={label}>Source <SaveIndicator status={saves["source"] || "idle"} /></p>
-          <InlineEdit value={candidate.source || "—"} onSave={(v) => handleSave("source", v === "—" ? null : v)} className="text-sm text-foreground" />
+          <FieldLabel saveState={saves["source"]}>Source</FieldLabel>
+          <InlineEdit value={candidate.source || "—"} onSave={(v) => handleSave("source", v === "—" ? null : v)} className="text-[13px]" />
         </div>
 
         <div className="col-span-2">
-          <p className={label}>Portfolio / LinkedIn <SaveIndicator status={saves["portfolioUrl"] || "idle"} /></p>
-          <InlineEdit value={candidate.portfolioUrl || "—"} onSave={(v) => handleSave("portfolioUrl", v === "—" ? null : v)} className="text-sm text-primary hover:underline" />
+          <FieldLabel saveState={saves["portfolioUrl"]}>Portfolio / LinkedIn</FieldLabel>
+          <InlineEdit value={candidate.portfolioUrl || "—"} onSave={(v) => handleSave("portfolioUrl", v === "—" ? null : v)} className="text-[13px]" />
         </div>
       </div>
 
       {/* Tags */}
-      <div>
-        <p className={label}>Tags</p>
+      <div style={{ borderTop: '1px solid #f3f4f6', marginTop: '20px', paddingTop: '20px' }}>
+        <FieldLabel>Tags</FieldLabel>
         <TagPills candidateId={candidate.id} tags={candidate.tags} maxVisible={10} />
       </div>
 
       {/* Transcript */}
-      <div>
-        <p className={label}>Communication Test Transcript <SaveIndicator status={saves["transcription"] || "idle"} /></p>
+      <div style={{ borderTop: '1px solid #f3f4f6', marginTop: '20px', paddingTop: '20px' }}>
+        <FieldLabel saveState={saves["transcription"]}>Communication Test Transcript</FieldLabel>
         <InlineEdit
           value={candidate.transcription || ""}
           onSave={(v) => handleSave("transcription", v)}
           as="textarea"
-          className="text-sm text-foreground w-full min-h-[200px]"
-          inputClassName="min-h-[200px]"
+          className="text-[13px] w-full"
+          inputClassName="min-h-[120px]"
         />
         {!candidate.transcription && (
-          <p className="text-xs text-muted-foreground mt-1">Click to paste Fathom/Meet transcript here...</p>
+          <p style={{ fontSize: '11px', color: '#9ca3af', marginTop: '6px' }}>Click to paste Fathom/Meet transcript here...</p>
         )}
       </div>
     </div>
   );
 }
 
-function StatusPicker({ current, statuses, onSave }: { current: string; statuses: CandidateStatus[]; onSave: (v: string) => void }) {
+/* ── Pickers (consistent with list row badge style) ─────── */
+function StatusPicker({ current, color, statuses, onSave }: { current: string; color: string; statuses: CandidateStatus[]; onSave: (v: string) => void }) {
   const [open, setOpen] = useState(false);
-  const obj = statuses.find((s) => s.label === current);
-  const color = obj?.color || "#6b7280";
+  const navigate = useNavigate();
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border-0 outline-none cursor-pointer" style={{ backgroundColor: `${color}26`, color }}>
+        <button className="inline-flex items-center rounded-full cursor-pointer transition-colors"
+          style={{ padding: '2px 8px', height: '20px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color, backgroundColor: `${color}20`, border: `1px solid ${color}35` }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = `${color}30`; }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = `${color}20`; }}>
           {current}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-44 p-1" align="start">
+      <PopoverContent className="p-1.5" align="start" style={{ width: '220px', borderRadius: '8px', border: '1px solid #e2e3e6', boxShadow: '0 8px 24px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)' }}>
+        <div className="px-2.5 pt-1.5 pb-1"><span style={{ fontSize: '10px', textTransform: 'uppercase', color: '#9ca3af', letterSpacing: '0.06em', fontWeight: 500 }}>CHANGE STATUS</span></div>
         {statuses.map((s) => (
           <button key={s.id} onClick={() => { onSave(s.label); setOpen(false); }}
-            className={`flex items-center gap-2 w-full px-2.5 py-1.5 text-sm rounded-sm transition-colors duration-fast text-foreground ${s.label === current ? "bg-muted font-medium" : "hover:bg-muted/60"}`}>
-            <span className="h-2.5 w-2.5 rounded shrink-0" style={{ backgroundColor: s.color }} />
-            {s.label}
+            className="flex items-center gap-2 w-full px-2 rounded-[5px] transition-colors hover:bg-[#f3f4f6]" style={{ height: '30px' }}>
+            <span className="shrink-0" style={{ width: '12px', height: '12px', borderRadius: '3px', backgroundColor: s.color }} />
+            <span style={{ fontSize: '13px', color: '#1a1a1a', flex: 1, textAlign: 'left' }}>{s.label}</span>
+            {s.label === current && <Check style={{ width: '14px', height: '14px', color: '#7c3aed' }} />}
           </button>
         ))}
+        <div style={{ borderTop: '1px solid #e9eaec', margin: '4px 0' }} />
+        <button onClick={() => { navigate('/settings'); setOpen(false); }} className="w-full text-left px-2.5 py-1.5 rounded-[5px] transition-colors hover:bg-[#f3f4f6]" style={{ fontSize: '12px', color: '#7c3aed' }}>Manage Statuses</button>
       </PopoverContent>
     </Popover>
   );
@@ -137,20 +157,29 @@ function StatusPicker({ current, statuses, onSave }: { current: string; statuses
 function CommPicker({ value, onSave }: { value: string; onSave: (v: string) => void }) {
   const [open, setOpen] = useState(false);
   const cc = getCommColor(value);
+  const border = cc.bg === '#dcfce7' ? '#bbf7d0' : cc.bg === '#dbeafe' ? '#bfdbfe' : cc.bg === '#fef3c7' ? '#fde68a' : '#fecaca';
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium border-0 outline-none cursor-pointer" style={{ backgroundColor: cc.bg, color: cc.text }}>
+        <button className="inline-flex items-center rounded-full cursor-pointer"
+          style={{ padding: '2px 8px', height: '20px', fontSize: '11px', fontWeight: 600, backgroundColor: cc.bg, color: cc.text, border: `1px solid ${border}` }}>
           {commLabel(value)}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-36 p-1" align="start">
-        {COMM_OPTIONS.map((opt) => (
-          <button key={opt} onClick={() => { onSave(opt); setOpen(false); }}
-            className={`flex items-center w-full px-2.5 py-1.5 text-sm rounded-sm transition-colors duration-fast text-foreground ${value === opt ? "bg-muted font-medium" : "hover:bg-muted/60"}`}>
-            {commLabel(opt)}
-          </button>
-        ))}
+      <PopoverContent className="p-1.5" align="start" style={{ width: '180px', borderRadius: '8px', border: '1px solid #e2e3e6', boxShadow: '0 8px 24px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)' }}>
+        {COMM_OPTIONS.map((opt) => {
+          const oc = getCommColor(opt);
+          const ob = oc.bg === '#dcfce7' ? '#bbf7d0' : oc.bg === '#dbeafe' ? '#bfdbfe' : oc.bg === '#fef3c7' ? '#fde68a' : '#fecaca';
+          return (
+            <button key={opt} onClick={() => { onSave(opt); setOpen(false); }}
+              className="flex items-center gap-2 w-full px-2 rounded-[5px] transition-colors hover:bg-[#f3f4f6]" style={{ height: '30px' }}>
+              <span className="inline-flex items-center rounded-full shrink-0" style={{ padding: '2px 8px', fontSize: '10px', fontWeight: 600, backgroundColor: oc.bg, color: oc.text, border: `1px solid ${ob}` }}>
+                {commLabel(opt)}
+              </span>
+              {value === opt && <Check style={{ width: '14px', height: '14px', marginLeft: 'auto', color: '#7c3aed' }} />}
+            </button>
+          );
+        })}
       </PopoverContent>
     </Popover>
   );
@@ -158,20 +187,28 @@ function CommPicker({ value, onSave }: { value: string; onSave: (v: string) => v
 
 function ShiftPicker({ value, onSave }: { value: string; onSave: (v: string) => void }) {
   const [open, setOpen] = useState(false);
+  const s = SHIFT_LABELS[value] || SHIFT_LABELS.REGULAR;
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="inline-flex items-center rounded px-1.5 py-0.5 text-xs text-muted-foreground bg-muted border-0 outline-none cursor-pointer hover:bg-muted/80 transition-colors duration-fast">
-          {SHIFT_LABELS[value] || value}
+        <button className="inline-flex items-center rounded-full cursor-pointer"
+          style={{ padding: '2px 8px', height: '20px', fontSize: '11px', fontWeight: 600, backgroundColor: s.bg, color: s.color, border: `1px solid ${s.border}` }}>
+          {s.label}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-36 p-1" align="start">
-        {SHIFT_OPTIONS.map((opt) => (
-          <button key={opt} onClick={() => { onSave(opt); setOpen(false); }}
-            className={`flex items-center w-full px-2.5 py-1.5 text-sm rounded-sm transition-colors duration-fast text-foreground ${value === opt ? "bg-muted font-medium" : "hover:bg-muted/60"}`}>
-            {SHIFT_LABELS[opt]}
-          </button>
-        ))}
+      <PopoverContent className="p-1.5" align="start" style={{ width: '180px', borderRadius: '8px', border: '1px solid #e2e3e6', boxShadow: '0 8px 24px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)' }}>
+        {SHIFT_OPTIONS.map((opt) => {
+          const sl = SHIFT_LABELS[opt];
+          return (
+            <button key={opt} onClick={() => { onSave(opt); setOpen(false); }}
+              className="flex items-center gap-2 w-full px-2 rounded-[5px] transition-colors hover:bg-[#f3f4f6]" style={{ height: '30px' }}>
+              <span className="inline-flex items-center rounded-full shrink-0" style={{ padding: '2px 8px', fontSize: '10px', fontWeight: 600, backgroundColor: sl.bg, color: sl.color, border: `1px solid ${sl.border}` }}>
+                {sl.label}
+              </span>
+              {value === opt && <Check style={{ width: '14px', height: '14px', marginLeft: 'auto', color: '#7c3aed' }} />}
+            </button>
+          );
+        })}
       </PopoverContent>
     </Popover>
   );
