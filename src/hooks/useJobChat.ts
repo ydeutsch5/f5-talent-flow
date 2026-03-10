@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { mockStore } from "@/lib/mockData";
+import { toast } from "sonner";
 
 export interface ChatMessage {
   id: string;
@@ -11,18 +12,22 @@ export interface ChatMessage {
 export function useJobChat(jobId: string | undefined) {
   return useQuery<ChatMessage[]>({
     queryKey: ["job-chat", jobId],
-    queryFn: () => api.get(`/jobs/${jobId}/chat`),
+    queryFn: () => mockStore.getJobChat(jobId!),
     enabled: !!jobId,
+    staleTime: Infinity,
   });
 }
 
 export function useSendChatMessage() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ jobId, message }: { jobId: string; message: string }) =>
-      api.post(`/jobs/${jobId}/chat`, { message }),
+    mutationFn: async ({ jobId, message }: { jobId: string; message: string }) => {
+      await new Promise(r => setTimeout(r, 800));
+      return mockStore.postJobChat(jobId, message);
+    },
     onSuccess: (_d, vars) => {
       qc.invalidateQueries({ queryKey: ["job-chat", vars.jobId] });
     },
+    onError: (e: Error) => toast.error(e.message, { duration: 8000 }),
   });
 }

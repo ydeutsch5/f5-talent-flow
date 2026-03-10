@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { mockStore } from "@/lib/mockData";
+import { toast } from "sonner";
 
 export interface CandidateActivityEntry {
   id: string;
@@ -12,18 +13,22 @@ export interface CandidateActivityEntry {
 export function useCandidateActivity(candidateId: string | undefined) {
   return useQuery<CandidateActivityEntry[]>({
     queryKey: ["candidate-activity", candidateId],
-    queryFn: () => api.get(`/candidates/${candidateId}/activity`),
+    queryFn: () => mockStore.getCandidateActivity(candidateId!) as CandidateActivityEntry[],
     enabled: !!candidateId,
+    staleTime: Infinity,
   });
 }
 
 export function usePostCandidateActivity() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ candidateId, content }: { candidateId: string; content: string }) =>
-      api.post(`/candidates/${candidateId}/activity`, { type: "comment", content }),
+    mutationFn: async ({ candidateId, content }: { candidateId: string; content: string }) => {
+      await new Promise(r => setTimeout(r, 350));
+      return mockStore.postCandidateActivity(candidateId, content);
+    },
     onSuccess: (_d, vars) => {
       qc.invalidateQueries({ queryKey: ["candidate-activity", vars.candidateId] });
     },
+    onError: (e: Error) => toast.error(e.message, { duration: 8000 }),
   });
 }
