@@ -106,11 +106,11 @@ export function SubmissionRow({ submission: s, onUpdate, onOpenDetail, onOpenCan
                 </>
               ) : (
                 <div className="p-2 space-y-2">
-                  <p className="text-xs font-medium text-foreground">Rejection reason</p>
+                  <p className="text-xs font-medium text-foreground">Rejection reason (min 10 chars)</p>
                   <textarea
                     value={rejectReason}
                     onChange={(e) => setRejectReason(e.target.value)}
-                    placeholder="Optional reason…"
+                    placeholder="Reason for rejection (required)…"
                     rows={2}
                     className="w-full rounded border border-input bg-background px-2 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring resize-none"
                     autoFocus
