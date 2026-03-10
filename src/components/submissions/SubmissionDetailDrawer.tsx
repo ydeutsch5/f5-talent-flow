@@ -6,13 +6,11 @@ import type { Submission } from "@/hooks/useSubmissions";
 import { getCommColor, commLabel } from "@/components/jobs/detail/matchUtils";
 import { format, formatDistanceToNow } from "date-fns";
 
-const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  Pending:  { bg: "#fef3c7", text: "#d97706" },
-  Approved: { bg: "#dcfce7", text: "#15803d" },
-  Rejected: { bg: "#fee2e2", text: "#dc2626" },
+const STATUS_COLORS: Record<string, { color: string }> = {
+  Pending: { color: "#d97706" },
+  Approved: { color: "#15803d" },
+  Rejected: { color: "#dc2626" },
 };
-
-const HOURS_LABELS: Record<string, string> = { US_HOURS: "US Hours", INDIA_SHIFT: "India Shift", GENERAL_SHIFT: "General" };
 
 interface SubmissionDetailDrawerProps {
   submission: Submission | null;
@@ -44,133 +42,102 @@ export function SubmissionDetailDrawer({ submission: s, open, onClose, onUpdate,
 
   const sc = STATUS_COLORS[s.status] || STATUS_COLORS.Pending;
   const cc = getCommColor(s.candidate.communicationRating || null);
+  const commBorder = cc.bg === '#dcfce7' ? '#bbf7d0' : cc.bg === '#dbeafe' ? '#bfdbfe' : cc.bg === '#fef3c7' ? '#fde68a' : '#fecaca';
   const initials = s.submittedBy.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
   return (
     <div className="fixed inset-0 z-50 flex">
-      <div className={`flex-1 bg-foreground/20 transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`} onClick={onClose} />
-      <div className={`w-[560px] max-w-full bg-background border-l border-border flex flex-col transition-transform duration-300 ease-out ${visible ? "translate-x-0" : "translate-x-full"}`}>
+      <div className="flex-1 transition-opacity" style={{ backgroundColor: 'rgba(0,0,0,0.15)', opacity: visible ? 1 : 0, transitionDuration: '260ms' }} onClick={onClose} />
+      <div className="flex flex-col bg-white" style={{ width: '560px', maxWidth: '100%', boxShadow: '-8px 0 32px rgba(0,0,0,0.12)', transform: visible ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 260ms cubic-bezier(0.32,0.72,0,1)' }}>
         {/* Header */}
-        <div className="flex items-center justify-between px-6 h-14 border-b border-border shrink-0">
-          <h2 className="text-lg font-semibold text-foreground">Submission Detail</h2>
-          <button onClick={onClose} className="h-7 w-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors duration-fast">
-            <X className="h-4 w-4" />
+        <div className="flex items-center justify-between shrink-0" style={{ height: '56px', borderBottom: '1px solid #e9eaec', padding: '0 20px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#1a1a1a' }}>Submission Detail</h2>
+          <button onClick={onClose} className="rounded-md flex items-center justify-center transition-colors hover:bg-[#f3f4f6]" style={{ width: '28px', height: '28px', color: '#6b7280' }}>
+            <X style={{ width: '20px', height: '20px' }} />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-          {/* Two cards */}
-          <div className="grid grid-cols-2 gap-4">
-            {/* Candidate card */}
-            <div className="border border-border rounded-md p-4 space-y-2">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Candidate</p>
-              <button onClick={() => onOpenCandidate(s.candidate.id)} className="text-sm font-semibold text-foreground hover:text-primary transition-colors duration-fast">
+        <div className="flex-1 overflow-y-auto" style={{ padding: '20px' }}>
+          {/* Cards */}
+          <div className="grid grid-cols-2 gap-4" style={{ marginBottom: '20px' }}>
+            <div style={{ border: '1px solid #e9eaec', borderRadius: '8px', padding: '12px' }}>
+              <p style={{ fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#9ca3af', marginBottom: '6px' }}>Candidate</p>
+              <button onClick={() => onOpenCandidate(s.candidate.id)} className="transition-colors" style={{ fontSize: '13px', fontWeight: 600, color: '#1a1a1a' }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = '#7c3aed'; }} onMouseLeave={(e) => { e.currentTarget.style.color = '#1a1a1a'; }}>
                 {s.candidate.name}
               </button>
-              <p className="text-xs text-muted-foreground">{s.candidate.title || "—"}</p>
-              <p className="text-xs text-muted-foreground">{s.candidate.email}</p>
-              {s.candidate.phone && <p className="text-xs text-muted-foreground">{s.candidate.phone}</p>}
+              <p style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>{s.candidate.title || "—"}</p>
+              <p style={{ fontSize: '11px', color: '#9ca3af' }}>{s.candidate.email}</p>
               {s.candidate.communicationRating && (
-                <span className="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium" style={{ backgroundColor: cc.bg, color: cc.text }}>
+                <span className="inline-flex items-center rounded-full" style={{ marginTop: '6px', padding: '2px 8px', fontSize: '11px', fontWeight: 600, backgroundColor: cc.bg, color: cc.text, border: `1px solid ${commBorder}` }}>
                   {commLabel(s.candidate.communicationRating)}
                 </span>
               )}
             </div>
-
-            {/* Job card */}
-            <div className="border border-border rounded-md p-4 space-y-2">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Job</p>
-              <button onClick={() => onOpenJob(s.job.id)} className="text-sm font-semibold text-foreground hover:text-primary transition-colors duration-fast">
+            <div style={{ border: '1px solid #e9eaec', borderRadius: '8px', padding: '12px' }}>
+              <p style={{ fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#9ca3af', marginBottom: '6px' }}>Job</p>
+              <button onClick={() => onOpenJob(s.job.id)} className="transition-colors" style={{ fontSize: '13px', fontWeight: 600, color: '#1a1a1a' }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = '#7c3aed'; }} onMouseLeave={(e) => { e.currentTarget.style.color = '#1a1a1a'; }}>
                 {s.job.roleTitle}
               </button>
-              <p className="text-xs text-muted-foreground">{s.job.clientName}</p>
-              {s.job.weeklyBudget && <p className="text-xs text-muted-foreground">Budget: {s.job.weeklyBudget}</p>}
-              {s.job.workingHours && (
-                <span className="inline-flex items-center rounded px-1.5 py-0.5 text-xs text-muted-foreground bg-muted">
-                  {HOURS_LABELS[s.job.workingHours] || s.job.workingHours}
-                </span>
-              )}
+              <p style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>{s.job.clientName}</p>
+              {s.job.weeklyBudget && <p style={{ fontSize: '11px', color: '#9ca3af' }}>Budget: {s.job.weeklyBudget}</p>}
             </div>
           </div>
 
           {/* Status + meta */}
-          <div className="flex items-center gap-4 flex-wrap">
-            <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium" style={{ backgroundColor: sc.bg, color: sc.text }}>
+          <div className="flex items-center gap-4 flex-wrap" style={{ marginBottom: '20px' }}>
+            <span className="inline-flex items-center rounded-full" style={{ padding: '2px 8px', height: '20px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: sc.color, backgroundColor: `${sc.color}20`, border: `1px solid ${sc.color}35` }}>
               {s.status}
             </span>
             <div className="flex items-center gap-2">
-              <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center text-[9px] font-semibold text-primary-foreground">
-                {initials}
+              <div className="rounded-full flex items-center justify-center" style={{ width: '20px', height: '20px', backgroundColor: '#7c3aed' }}>
+                <span style={{ fontSize: '9px', fontWeight: 600, color: '#ffffff' }}>{initials}</span>
               </div>
-              <span className="text-xs text-muted-foreground">by {s.submittedBy.name}</span>
+              <span style={{ fontSize: '11px', color: '#9ca3af' }}>by {s.submittedBy.name}</span>
             </div>
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="text-xs text-muted-foreground cursor-default">
-                  {formatDistanceToNow(new Date(s.createdAt), { addSuffix: true })}
-                </span>
+                <span className="cursor-default" style={{ fontSize: '11px', color: '#9ca3af' }}>{formatDistanceToNow(new Date(s.createdAt), { addSuffix: true })}</span>
               </TooltipTrigger>
               <TooltipContent>{format(new Date(s.createdAt), "MMM d, yyyy 'at' h:mm a")}</TooltipContent>
             </Tooltip>
           </div>
 
           {/* Notes */}
-          <div>
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">Notes</p>
-            <InlineEdit
-              value={s.notes || ""}
-              onSave={(v) => onUpdate(s.id, { notes: v })}
-              as="textarea"
-              className="text-sm text-foreground w-full"
-              inputClassName="min-h-[80px]"
-            />
-            {!s.notes && <p className="text-xs text-muted-foreground mt-1">Click to add notes</p>}
+          <div style={{ marginBottom: '20px' }}>
+            <p style={{ fontSize: '12px', fontWeight: 500, color: '#374151', marginBottom: '4px' }}>Notes</p>
+            <InlineEdit value={s.notes || ""} onSave={(v) => onUpdate(s.id, { notes: v })} as="textarea" className="text-[13px] w-full" inputClassName="min-h-[80px]" />
+            {!s.notes && <p style={{ fontSize: '11px', color: '#9ca3af', marginTop: '4px' }}>Click to add notes</p>}
           </div>
 
           {/* Actions */}
           {s.status === "Pending" && (
-            <div className="border-t border-border pt-4 space-y-3">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</p>
+            <div style={{ borderTop: '1px solid #e9eaec', paddingTop: '16px' }}>
+              <p style={{ fontSize: '12px', fontWeight: 500, color: '#374151', marginBottom: '8px' }}>Actions</p>
               {!rejectMode ? (
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => onUpdate(s.id, { status: "Approved" })}
-                    className="flex-1 h-9 rounded-md text-sm font-medium transition-opacity duration-fast hover:opacity-90 flex items-center justify-center gap-1.5"
-                    style={{ backgroundColor: "#dcfce7", color: "#15803d" }}
-                  >
-                    <Check className="h-4 w-4" /> Approve
+                  <button onClick={() => onUpdate(s.id, { status: "Approved" })} className="flex-1 flex items-center justify-center gap-1.5 rounded-md transition-colors"
+                    style={{ height: '28px', fontSize: '13px', fontWeight: 500, backgroundColor: '#dcfce7', color: '#15803d' }}>
+                    <Check style={{ width: '14px', height: '14px' }} /> Approve
                   </button>
-                  <button
-                    onClick={() => setRejectMode(true)}
-                    className="flex-1 h-9 rounded-md text-sm font-medium transition-opacity duration-fast hover:opacity-90 flex items-center justify-center gap-1.5"
-                    style={{ backgroundColor: "#fee2e2", color: "#dc2626" }}
-                  >
-                    <XIcon className="h-4 w-4" /> Reject
+                  <button onClick={() => setRejectMode(true)} className="flex-1 flex items-center justify-center gap-1.5 rounded-md transition-colors"
+                    style={{ height: '28px', fontSize: '13px', fontWeight: 500, backgroundColor: '#fee2e2', color: '#dc2626' }}>
+                    <XIcon style={{ width: '14px', height: '14px' }} /> Reject
                   </button>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <p className="text-xs text-muted-foreground mb-1">Reason for rejection (min 10 characters)</p>
-                  <textarea
-                    value={rejectReason}
-                    onChange={(e) => setRejectReason(e.target.value)}
-                    placeholder="Reason for rejection (required)…"
-                    rows={2}
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring resize-none"
-                    autoFocus
+                  <p style={{ fontSize: '11px', color: '#9ca3af' }}>Reason for rejection (min 10 characters)</p>
+                  <textarea value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} placeholder="Reason…" rows={2}
+                    style={{ width: '100%', borderRadius: '6px', border: '1px solid #e2e3e6', padding: '6px 10px', fontSize: '13px', color: '#1a1a1a', resize: 'vertical', minHeight: '60px' }} autoFocus
+                    onFocus={(e) => { e.currentTarget.style.borderColor = '#7c3aed'; e.currentTarget.style.boxShadow = '0 0 0 3px #7c3aed18'; }}
+                    onBlur={(e) => { e.currentTarget.style.borderColor = '#e2e3e6'; e.currentTarget.style.boxShadow = 'none'; }}
                   />
                   <div className="flex gap-2">
-                    <button
-                      onClick={() => { setRejectMode(false); setRejectReason(""); }}
-                      className="flex-1 h-8 rounded-md border border-border text-sm text-muted-foreground hover:bg-muted transition-colors duration-fast"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={() => { onUpdate(s.id, { status: "Rejected", notes: rejectReason || s.notes }); setRejectMode(false); }}
-                      disabled={rejectReason.trim().length < 10}
-                      className="flex-1 h-8 rounded-md bg-destructive text-destructive-foreground text-sm font-medium hover:opacity-90 transition-opacity duration-fast disabled:opacity-50"
-                    >
+                    <button onClick={() => { setRejectMode(false); setRejectReason(""); }} className="flex-1 rounded-md transition-colors hover:bg-[#f3f4f6]" style={{ height: '28px', fontSize: '13px', color: '#9ca3af', border: '1px solid #e2e3e6' }}>Cancel</button>
+                    <button onClick={() => { onUpdate(s.id, { status: "Rejected", notes: rejectReason || s.notes }); setRejectMode(false); }} disabled={rejectReason.trim().length < 10}
+                      style={{ flex: 1, height: '28px', borderRadius: '6px', backgroundColor: '#dc2626', color: '#ffffff', fontSize: '13px', fontWeight: 500, opacity: rejectReason.trim().length < 10 ? 0.5 : 1 }}>
                       Confirm Reject
                     </button>
                   </div>

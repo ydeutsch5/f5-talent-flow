@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { InlineEdit } from "../InlineEdit";
 import { StatusBadge } from "../StatusBadge";
@@ -24,21 +24,14 @@ export function JobDetailDrawer({ job, open, onClose, statuses, onUpdate }: JobD
   const [activeTab, setActiveTab] = useState<Tab>("Candidates");
   const [visible, setVisible] = useState(false);
 
-  // Animate in
   useEffect(() => {
-    if (open) {
-      requestAnimationFrame(() => setVisible(true));
-    } else {
-      setVisible(false);
-    }
+    if (open) requestAnimationFrame(() => setVisible(true));
+    else setVisible(false);
   }, [open]);
 
-  // Escape key
   useEffect(() => {
     if (!open) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [open, onClose]);
@@ -49,80 +42,93 @@ export function JobDetailDrawer({ job, open, onClose, statuses, onUpdate }: JobD
     <div className="fixed inset-0 z-50 flex">
       {/* Backdrop */}
       <div
-        className={`flex-1 bg-foreground/20 transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
+        className="flex-1 transition-opacity"
+        style={{
+          backgroundColor: 'rgba(0,0,0,0.15)',
+          opacity: visible ? 1 : 0,
+          transitionDuration: '260ms',
+        }}
         onClick={onClose}
       />
 
-      {/* Drawer panel */}
+      {/* Panel */}
       <div
-        className={`flex flex-col bg-background border-l border-border transition-transform duration-300 ease-out ${visible ? "translate-x-0" : "translate-x-full"}`}
-        style={{ width: "75vw", maxWidth: "100vw" }}
+        className="flex flex-col bg-white"
+        style={{
+          width: '75vw',
+          minWidth: '840px',
+          maxWidth: '100vw',
+          boxShadow: '-8px 0 32px rgba(0,0,0,0.12)',
+          transform: visible ? 'translateX(0)' : 'translateX(100%)',
+          transition: 'transform 260ms cubic-bezier(0.32,0.72,0,1)',
+        }}
       >
         {/* Header */}
-        <div className="shrink-0 px-6 pt-5 pb-3 border-b border-border">
-          <div className="flex items-start justify-between mb-2">
-            <div className="flex items-center gap-3 flex-wrap">
-              <StatusBadge
-                currentStatus={job.status}
-                statuses={statuses}
-                onChangeStatus={(s) => onUpdate(job.id, { status: s })}
-              />
-              <HoursChip
-                value={job.workingHours}
-                onSave={(v) => onUpdate(job.id, { workingHours: v } as any)}
+        <div className="shrink-0" style={{ height: '56px', borderBottom: '1px solid #e9eaec', padding: '0 20px', display: 'flex', alignItems: 'center' }}>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-3">
+              <InlineEdit
+                value={job.roleTitle}
+                onSave={(v) => onUpdate(job.id, { roleTitle: v })}
+                className="text-[18px] font-semibold"
               />
             </div>
+            <InlineEdit
+              value={job.clientName}
+              onSave={(v) => onUpdate(job.id, { clientName: v })}
+              className="text-[13px]"
+            />
+          </div>
+          <div className="flex items-center gap-3">
+            <StatusBadge currentStatus={job.status} statuses={statuses} onChangeStatus={(s) => onUpdate(job.id, { status: s })} />
+            <HoursChip value={job.workingHours} onSave={(v) => onUpdate(job.id, { workingHours: v } as any)} />
+            <div style={{ width: '1px', height: '20px', backgroundColor: '#e9eaec' }} />
             <button
               onClick={onClose}
-              className="h-7 w-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors duration-fast"
+              className="rounded-md flex items-center justify-center transition-colors hover:bg-[#f3f4f6]"
+              style={{ width: '28px', height: '28px', color: '#6b7280' }}
             >
-              <X className="h-4 w-4" />
+              <X style={{ width: '20px', height: '20px' }} />
             </button>
-          </div>
-          <InlineEdit
-            value={job.roleTitle}
-            onSave={(v) => onUpdate(job.id, { roleTitle: v })}
-            className="text-xl font-bold text-foreground"
-          />
-          <InlineEdit
-            value={job.clientName}
-            onSave={(v) => onUpdate(job.id, { clientName: v })}
-            className="text-sm text-muted-foreground mt-0.5"
-          />
-
-          {/* Tabs */}
-          <div className="flex gap-0 mt-4 -mb-[1px]">
-            {TABS.map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors duration-fast ${
-                  activeTab === tab
-                    ? "border-primary text-foreground"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
           </div>
         </div>
 
-        {/* Body: split into left (tabs) and right (activity) */}
+        {/* Tab bar */}
+        <div className="flex shrink-0" style={{ height: '40px', borderBottom: '1px solid #e9eaec', padding: '0 20px', backgroundColor: '#ffffff' }}>
+          {TABS.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className="transition-colors"
+              style={{
+                padding: '0 16px',
+                height: '40px',
+                fontSize: '13px',
+                fontWeight: activeTab === tab ? 600 : 500,
+                color: activeTab === tab ? '#1a1a1a' : '#6b7280',
+                borderBottom: activeTab === tab ? '2px solid #7c3aed' : '2px solid transparent',
+              }}
+              onMouseEnter={(e) => { if (activeTab !== tab) { e.currentTarget.style.color = '#374151'; e.currentTarget.style.backgroundColor = '#f7f8f9'; } }}
+              onMouseLeave={(e) => { if (activeTab !== tab) { e.currentTarget.style.color = '#6b7280'; e.currentTarget.style.backgroundColor = 'transparent'; } }}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* Body */}
         <div className="flex flex-1 overflow-hidden">
-          {/* Left — Tab content (65%) */}
-          <div className="flex-1 overflow-hidden" style={{ flex: "0 0 65%" }}>
+          {/* Left content */}
+          <div className="overflow-auto" style={{ flex: '0 0 65%', padding: '20px' }}>
             {activeTab === "Candidates" && <CandidatesTab jobId={job.id} />}
             {activeTab === "Intelligence" && <IntelligenceTab jobId={job.id} />}
             {activeTab === "Details" && <DetailsTab job={job} statuses={statuses} />}
             {activeTab === "Activity" && <ActivityFeed jobId={job.id} />}
           </div>
 
-          {/* Right — Activity feed (35%) */}
-          <div className="border-l border-border flex flex-col overflow-hidden" style={{ flex: "0 0 35%" }}>
-            <div className="px-4 py-2.5 border-b border-border">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Activity</p>
-            </div>
+          {/* Right activity panel */}
+          <div className="overflow-auto" style={{ flex: '0 0 35%', borderLeft: '1px solid #e9eaec', padding: '16px' }}>
+            <p style={{ fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#9ca3af', marginBottom: '12px' }}>Activity</p>
             <ActivityFeed jobId={job.id} />
           </div>
         </div>

@@ -9,10 +9,10 @@ import { InlineEdit } from "@/components/jobs/InlineEdit";
 import type { Submission } from "@/hooks/useSubmissions";
 import { formatDistanceToNow, format } from "date-fns";
 
-const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  Pending:  { bg: "#fef3c7", text: "#d97706" },
-  Approved: { bg: "#dcfce7", text: "#15803d" },
-  Rejected: { bg: "#fee2e2", text: "#dc2626" },
+const STATUS_COLORS: Record<string, { color: string }> = {
+  Pending: { color: "#d97706" },
+  Approved: { color: "#15803d" },
+  Rejected: { color: "#dc2626" },
 };
 
 interface SubmissionRowProps {
@@ -31,48 +31,36 @@ export function SubmissionRow({ submission: s, onUpdate, onOpenDetail, onOpenCan
   const sc = STATUS_COLORS[s.status] || STATUS_COLORS.Pending;
 
   const initials = s.submittedBy.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
-  const truncatedNotes = s.notes ? (s.notes.length > 60 ? s.notes.slice(0, 60) + "…" : s.notes) : "—";
 
-  const handleApprove = () => {
-    onUpdate(s.id, { status: "Approved" });
-    setStatusOpen(false);
-  };
-
-  const handleReject = () => {
-    onUpdate(s.id, { status: "Rejected", notes: rejectReason || s.notes });
-    setRejectMode(false);
-    setRejectReason("");
-    setStatusOpen(false);
-  };
+  const handleApprove = () => { onUpdate(s.id, { status: "Approved" }); setStatusOpen(false); };
+  const handleReject = () => { onUpdate(s.id, { status: "Rejected", notes: rejectReason || s.notes }); setRejectMode(false); setRejectReason(""); setStatusOpen(false); };
 
   return (
     <div
-      className={`group grid items-center h-row border-b border-border px-3 cursor-pointer transition-colors duration-fast ${hovered ? "bg-row-hover" : ""}`}
-      style={{ gridTemplateColumns: "1fr 1fr 100px 130px 90px 1fr 32px" }}
+      className="group grid items-center cursor-pointer transition-colors"
+      style={{
+        gridTemplateColumns: "1fr 1fr 100px 130px 90px 1fr 32px",
+        height: '34px', borderBottom: '1px solid #f3f4f6', padding: '0 8px',
+        backgroundColor: hovered ? '#f7f8f9' : '#ffffff',
+      }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={() => onOpenDetail(s)}
     >
       {/* Candidate */}
       <div className="flex flex-col justify-center min-w-0 pr-2">
-        <button
-          onClick={(e) => { e.stopPropagation(); onOpenCandidate(s.candidate.id); }}
-          className="text-sm font-semibold text-foreground truncate text-left hover:text-primary transition-colors duration-fast"
-        >
+        <button onClick={(e) => { e.stopPropagation(); onOpenCandidate(s.candidate.id); }} className="text-left truncate transition-colors" style={{ fontSize: '13px', fontWeight: 500, color: '#1a1a1a' }} onMouseEnter={(e) => { e.currentTarget.style.color = '#7c3aed'; }} onMouseLeave={(e) => { e.currentTarget.style.color = '#1a1a1a'; }}>
           {s.candidate.name}
         </button>
-        <span className="text-xs text-muted-foreground truncate">{s.candidate.title || "—"}</span>
+        <span className="truncate" style={{ fontSize: '11px', color: '#9ca3af' }}>{s.candidate.title || "—"}</span>
       </div>
 
       {/* Job */}
       <div className="flex flex-col justify-center min-w-0 pr-2">
-        <button
-          onClick={(e) => { e.stopPropagation(); onOpenJob(s.job.id); }}
-          className="text-sm font-semibold text-foreground truncate text-left hover:text-primary transition-colors duration-fast"
-        >
+        <button onClick={(e) => { e.stopPropagation(); onOpenJob(s.job.id); }} className="text-left truncate transition-colors" style={{ fontSize: '13px', fontWeight: 500, color: '#1a1a1a' }} onMouseEnter={(e) => { e.currentTarget.style.color = '#7c3aed'; }} onMouseLeave={(e) => { e.currentTarget.style.color = '#1a1a1a'; }}>
           {s.job.roleTitle}
         </button>
-        <span className="text-xs text-muted-foreground truncate">{s.job.clientName}</span>
+        <span className="truncate" style={{ fontSize: '11px', color: '#9ca3af' }}>{s.job.clientName}</span>
       </div>
 
       {/* Status */}
@@ -80,65 +68,38 @@ export function SubmissionRow({ submission: s, onUpdate, onOpenDetail, onOpenCan
         {s.status === "Pending" ? (
           <Popover open={statusOpen} onOpenChange={(v) => { setStatusOpen(v); if (!v) { setRejectMode(false); setRejectReason(""); } }}>
             <PopoverTrigger asChild>
-              <button
-                className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border-0 outline-none cursor-pointer transition-opacity hover:opacity-80"
-                style={{ backgroundColor: sc.bg, color: sc.text }}
-              >
+              <button className="inline-flex items-center rounded-full cursor-pointer transition-colors" style={{ padding: '2px 8px', height: '20px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: sc.color, backgroundColor: `${sc.color}20`, border: `1px solid ${sc.color}35` }}>
                 {s.status}
               </button>
             </PopoverTrigger>
-            <PopoverContent className="w-56 p-1" align="start" sideOffset={4}>
+            <PopoverContent className="p-1.5" align="start" sideOffset={4} style={{ width: '240px', borderRadius: '8px', border: '1px solid #e2e3e6', boxShadow: '0 8px 24px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)' }}>
               {!rejectMode ? (
                 <>
-                  <button
-                    onClick={handleApprove}
-                    className="flex items-center gap-2 w-full px-2.5 py-2 text-sm rounded-sm hover:bg-muted/60 transition-colors duration-fast"
-                    style={{ color: "#15803d" }}
-                  >
+                  <button onClick={handleApprove} className="flex items-center gap-2 w-full px-2 rounded-[5px] transition-colors hover:bg-[#f3f4f6]" style={{ height: '30px', color: '#15803d', fontSize: '13px' }}>
                     <Check className="h-3.5 w-3.5" /> Approve
                   </button>
-                  <button
-                    onClick={() => setRejectMode(true)}
-                    className="flex items-center gap-2 w-full px-2.5 py-2 text-sm rounded-sm hover:bg-muted/60 transition-colors duration-fast text-destructive"
-                  >
+                  <button onClick={() => setRejectMode(true)} className="flex items-center gap-2 w-full px-2 rounded-[5px] transition-colors hover:bg-[#f3f4f6]" style={{ height: '30px', color: '#dc2626', fontSize: '13px' }}>
                     <XIcon className="h-3.5 w-3.5" /> Reject…
                   </button>
                 </>
               ) : (
                 <div className="p-2 space-y-2">
-                  <p className="text-xs font-medium text-foreground">Rejection reason (min 10 chars)</p>
-                  <textarea
-                    value={rejectReason}
-                    onChange={(e) => setRejectReason(e.target.value)}
-                    placeholder="Reason for rejection (required)…"
-                    rows={2}
-                    className="w-full rounded border border-input bg-background px-2 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring resize-none"
-                    autoFocus
+                  <p style={{ fontSize: '12px', fontWeight: 500, color: '#374151' }}>Rejection reason (min 10 chars)</p>
+                  <textarea value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} placeholder="Reason for rejection…" rows={2}
+                    style={{ width: '100%', borderRadius: '6px', border: '1px solid #e2e3e6', padding: '6px 10px', fontSize: '13px', color: '#1a1a1a', resize: 'none' }} autoFocus
+                    onFocus={(e) => { e.currentTarget.style.borderColor = '#7c3aed'; e.currentTarget.style.boxShadow = '0 0 0 3px #7c3aed18'; }}
+                    onBlur={(e) => { e.currentTarget.style.borderColor = '#e2e3e6'; e.currentTarget.style.boxShadow = 'none'; }}
                   />
                   <div className="flex gap-2">
-                    <button
-                      onClick={() => setRejectMode(false)}
-                      className="flex-1 h-7 rounded text-xs text-muted-foreground hover:bg-muted transition-colors duration-fast"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleReject}
-                      disabled={rejectReason.trim().length < 10}
-                      className="flex-1 h-7 rounded bg-destructive text-destructive-foreground text-xs font-medium hover:opacity-90 transition-opacity duration-fast disabled:opacity-50"
-                    >
-                      Confirm Reject
-                    </button>
+                    <button onClick={() => setRejectMode(false)} className="flex-1 rounded-md transition-colors hover:bg-[#f3f4f6]" style={{ height: '28px', fontSize: '13px', color: '#9ca3af' }}>Cancel</button>
+                    <button onClick={handleReject} disabled={rejectReason.trim().length < 10} style={{ flex: 1, height: '28px', borderRadius: '6px', backgroundColor: '#dc2626', color: '#ffffff', fontSize: '13px', fontWeight: 500, opacity: rejectReason.trim().length < 10 ? 0.5 : 1 }}>Confirm</button>
                   </div>
                 </div>
               )}
             </PopoverContent>
           </Popover>
         ) : (
-          <span
-            className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-            style={{ backgroundColor: sc.bg, color: sc.text }}
-          >
+          <span className="inline-flex items-center rounded-full" style={{ padding: '2px 8px', height: '20px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: sc.color, backgroundColor: `${sc.color}20`, border: `1px solid ${sc.color}35` }}>
             {s.status}
           </span>
         )}
@@ -146,19 +107,17 @@ export function SubmissionRow({ submission: s, onUpdate, onOpenDetail, onOpenCan
 
       {/* Submitted By */}
       <div className="flex items-center gap-2">
-        <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-[10px] font-semibold text-primary-foreground shrink-0">
-          {initials}
+        <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: '24px', height: '24px', backgroundColor: '#7c3aed' }}>
+          <span style={{ fontSize: '10px', fontWeight: 600, color: '#ffffff' }}>{initials}</span>
         </div>
-        <span className="text-xs text-foreground truncate">{s.submittedBy.name}</span>
+        <span className="truncate" style={{ fontSize: '11px', color: '#374151' }}>{s.submittedBy.name}</span>
       </div>
 
       {/* Date */}
       <div className="flex items-center">
         <Tooltip>
           <TooltipTrigger asChild>
-            <span className="text-xs text-muted-foreground cursor-default">
-              {formatDistanceToNow(new Date(s.createdAt), { addSuffix: true })}
-            </span>
+            <span className="cursor-default" style={{ fontSize: '11px', color: '#9ca3af' }}>{formatDistanceToNow(new Date(s.createdAt), { addSuffix: true })}</span>
           </TooltipTrigger>
           <TooltipContent>{format(new Date(s.createdAt), "MMM d, yyyy 'at' h:mm a")}</TooltipContent>
         </Tooltip>
@@ -169,16 +128,10 @@ export function SubmissionRow({ submission: s, onUpdate, onOpenDetail, onOpenCan
         <Tooltip>
           <TooltipTrigger asChild>
             <div className="truncate">
-              <InlineEdit
-                value={s.notes || ""}
-                onSave={(v) => onUpdate(s.id, { notes: v })}
-                className="text-xs text-muted-foreground truncate"
-              />
+              <InlineEdit value={s.notes || ""} onSave={(v) => onUpdate(s.id, { notes: v })} className="text-[11px] truncate" />
             </div>
           </TooltipTrigger>
-          {s.notes && s.notes.length > 60 && (
-            <TooltipContent className="max-w-xs text-xs">{s.notes}</TooltipContent>
-          )}
+          {s.notes && s.notes.length > 60 && <TooltipContent className="max-w-xs text-xs">{s.notes}</TooltipContent>}
         </Tooltip>
       </div>
 
@@ -186,30 +139,20 @@ export function SubmissionRow({ submission: s, onUpdate, onOpenDetail, onOpenCan
       <div className="flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className={`h-6 w-6 rounded flex items-center justify-center text-muted-foreground hover:bg-muted transition-all duration-fast ${hovered ? "opacity-100" : "opacity-0"}`}>
+            <button className="h-7 w-7 rounded-md flex items-center justify-center transition-all hover:bg-[#f3f4f6]" style={{ color: '#6b7280', opacity: hovered ? 1 : 0 }}>
               <MoreHorizontal className="h-4 w-4" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-44">
             {s.status === "Pending" && (
               <>
-                <DropdownMenuItem onClick={handleApprove} className="text-[#15803d]">
-                  <Check className="mr-2 h-3.5 w-3.5" /> Approve
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => { setStatusOpen(true); setRejectMode(true); }} className="text-destructive">
-                  <XIcon className="mr-2 h-3.5 w-3.5" /> Reject with reason
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleApprove} style={{ color: '#15803d' }}><Check className="mr-2 h-3.5 w-3.5" /> Approve</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { setStatusOpen(true); setRejectMode(true); }} className="text-destructive"><XIcon className="mr-2 h-3.5 w-3.5" /> Reject</DropdownMenuItem>
                 <DropdownMenuSeparator />
               </>
             )}
-            <DropdownMenuItem onClick={() => onOpenDetail(s)}>
-              <Eye className="mr-2 h-3.5 w-3.5" /> View Details
-            </DropdownMenuItem>
-            {s.status !== "Pending" && (
-              <DropdownMenuItem onClick={() => onOpenDetail(s)}>
-                <MessageSquare className="mr-2 h-3.5 w-3.5" /> Add Note
-              </DropdownMenuItem>
-            )}
+            <DropdownMenuItem onClick={() => onOpenDetail(s)}><Eye className="mr-2 h-3.5 w-3.5" /> View Details</DropdownMenuItem>
+            {s.status !== "Pending" && <DropdownMenuItem onClick={() => onOpenDetail(s)}><MessageSquare className="mr-2 h-3.5 w-3.5" /> Add Note</DropdownMenuItem>}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

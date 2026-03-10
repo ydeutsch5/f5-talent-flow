@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ChevronDown, ChevronRight, Plus } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { CandidateRow } from "./CandidateRow";
 import type { Candidate } from "@/hooks/useCandidates";
 import type { CandidateStatus } from "@/hooks/useCandidateStatuses";
@@ -27,21 +27,28 @@ export function CandidatesListView({
     }));
   }, [candidates, statuses]);
 
+  const colHeaderStyle: React.CSSProperties = {
+    fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#9ca3af', fontWeight: 500,
+  };
+
   return (
     <div>
       {/* Column headers */}
       <div
-        className="grid items-center h-8 px-3 border-b border-border text-xs text-muted-foreground font-medium uppercase tracking-wider"
-        style={{ gridTemplateColumns: "28px 1fr 110px 90px 80px minmax(120px,1fr) 60px 80px 32px" }}
+        className="grid items-center"
+        style={{
+          gridTemplateColumns: "28px 1fr 110px 90px 80px minmax(120px,1fr) 60px 80px 32px",
+          height: '32px', borderBottom: '1px solid #e9eaec', padding: '0 8px', backgroundColor: '#ffffff',
+        }}
       >
         <div />
-        <div>Name</div>
-        <div>Status</div>
-        <div>Comm</div>
-        <div>Shift</div>
-        <div>Tags</div>
-        <div className="text-center">Jobs</div>
-        <div>Updated</div>
+        <div style={colHeaderStyle}>Name</div>
+        <div style={colHeaderStyle}>Status</div>
+        <div style={colHeaderStyle}>Comm</div>
+        <div style={colHeaderStyle}>Shift</div>
+        <div style={colHeaderStyle}>Tags</div>
+        <div style={{ ...colHeaderStyle, textAlign: 'center' }}>Jobs</div>
+        <div style={colHeaderStyle}>Updated</div>
         <div />
       </div>
 
@@ -50,17 +57,18 @@ export function CandidatesListView({
         return (
           <div key={status.id}>
             <div
-              className="group flex items-center h-row px-3 border-b border-border cursor-pointer select-none hover:bg-row-hover transition-colors duration-fast"
+              className="group flex items-center cursor-pointer select-none transition-colors hover:bg-[#f7f8f9]"
               onClick={() => setCollapsed((p) => ({ ...p, [status.label]: !p[status.label] }))}
-              style={{ borderLeftWidth: 3, borderLeftColor: status.color }}
+              style={{ height: '32px', padding: '0 8px' }}
             >
               {isCol
-                ? <ChevronRight className="h-3.5 w-3.5 text-muted-foreground mr-2 shrink-0" />
-                : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground mr-2 shrink-0" />}
-              <span className="text-sm font-semibold mr-2" style={{ color: status.color }}>
+                ? <ChevronRight className="shrink-0 mr-1.5" style={{ width: '10px', height: '10px', color: '#9ca3af' }} />
+                : <ChevronDown className="shrink-0 mr-1.5" style={{ width: '10px', height: '10px', color: '#9ca3af' }} />}
+              <span className="shrink-0 rounded-full mr-2" style={{ width: '8px', height: '8px', backgroundColor: status.color }} />
+              <span style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700, color: status.color, marginRight: '6px' }}>
                 {status.label}
               </span>
-              <span className="inline-flex items-center justify-center h-4 min-w-[18px] rounded-full bg-muted text-xs text-muted-foreground px-1.5">
+              <span className="rounded-full" style={{ padding: '1px 6px', fontSize: '11px', fontWeight: 600, backgroundColor: `${status.color}1F`, color: status.color }}>
                 {gc.length}
               </span>
             </div>

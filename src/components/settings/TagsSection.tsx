@@ -8,7 +8,6 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 export function TagsSection() {
@@ -24,17 +23,9 @@ export function TagsSection() {
 
   const handleAdd = () => {
     if (!newName.trim()) return;
-    createTag.mutate(
-      { name: newName.trim(), color: newColor },
-      {
-        onSuccess: () => {
-          setAdding(false);
-          setNewName("");
-          setNewColor("#8b5cf6");
-          toast.success("Tag created");
-        },
-      }
-    );
+    createTag.mutate({ name: newName.trim(), color: newColor }, {
+      onSuccess: () => { setAdding(false); setNewName(""); setNewColor("#8b5cf6"); toast.success("Tag created"); },
+    });
   };
 
   const candidateCount = (deleteTarget as any)?._count?.candidates ?? 0;
@@ -42,80 +33,49 @@ export function TagsSection() {
   if (isLoading) {
     return (
       <div className="space-y-2 animate-pulse">
-        {[1, 2, 3].map((i) => <div key={i} className="h-10 bg-muted rounded" />)}
+        {[1, 2, 3].map((i) => <div key={i} style={{ height: '34px', backgroundColor: '#f3f4f6', borderRadius: '6px' }} />)}
       </div>
     );
   }
 
   return (
     <div>
-      <h2 className="text-lg font-semibold text-foreground mb-1">Tags</h2>
-      <p className="text-sm text-muted-foreground mb-4">
-        Manage tags that can be applied to candidates across the app.
-      </p>
+      <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#1a1a1a', marginBottom: '4px' }}>Tags</h2>
+      <p style={{ fontSize: '13px', color: '#9ca3af', marginBottom: '16px' }}>Manage tags that can be applied to candidates.</p>
 
-      <div className="space-y-0.5">
+      <div className="space-y-px">
         {tags.map((tag: any) => (
-          <TagRow
-            key={tag.id}
-            tag={tag}
-            onUpdateColor={(color) => updateTag.mutate({ id: tag.id, color })}
-            onUpdateName={(name) => updateTag.mutate({ id: tag.id, name })}
-            onDelete={() => setDeleteTarget(tag)}
-          />
+          <TagRow key={tag.id} tag={tag} onUpdateColor={(color) => updateTag.mutate({ id: tag.id, color })} onUpdateName={(name) => updateTag.mutate({ id: tag.id, name })} onDelete={() => setDeleteTarget(tag)} />
         ))}
       </div>
 
       {adding ? (
-        <div className="flex items-center gap-2 mt-2 px-2 h-10">
+        <div className="flex items-center gap-2 mt-2 px-2" style={{ height: '34px' }}>
           <ColorPalettePicker color={newColor} onChange={setNewColor} />
-          <input
-            autoFocus
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleAdd();
-              if (e.key === "Escape") setAdding(false);
-            }}
-            placeholder="Tag name"
-            className="flex-1 bg-background border border-input rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+          <input autoFocus value={newName} onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") handleAdd(); if (e.key === "Escape") setAdding(false); }}
+            placeholder="Tag name" style={{ flex: 1, height: '32px', border: '1px solid #e2e3e6', borderRadius: '6px', padding: '0 10px', fontSize: '13px', color: '#1a1a1a' }}
+            onFocus={(e) => { e.currentTarget.style.borderColor = '#7c3aed'; e.currentTarget.style.boxShadow = '0 0 0 3px #7c3aed18'; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = '#e2e3e6'; e.currentTarget.style.boxShadow = 'none'; }}
           />
-          <Button size="sm" onClick={handleAdd} disabled={!newName.trim()}>Add</Button>
-          <Button size="sm" variant="ghost" onClick={() => setAdding(false)}>Cancel</Button>
+          <button onClick={handleAdd} disabled={!newName.trim()} style={{ height: '28px', padding: '0 12px', borderRadius: '6px', backgroundColor: '#7c3aed', color: '#ffffff', fontSize: '13px', fontWeight: 500, opacity: !newName.trim() ? 0.5 : 1 }}>Add</button>
+          <button onClick={() => setAdding(false)} style={{ height: '28px', padding: '0 10px', borderRadius: '6px', border: '1px solid #e2e3e6', fontSize: '13px', color: '#374151' }}>Cancel</button>
         </div>
       ) : (
-        <Button variant="ghost" size="sm" className="mt-2" onClick={() => setAdding(true)}>
-          <Plus className="h-4 w-4 mr-1" /> Add Tag
-        </Button>
+        <button onClick={() => setAdding(true)} className="flex items-center gap-1 mt-2 transition-colors hover:bg-[#f3f4f6] rounded-md" style={{ height: '28px', padding: '0 10px', fontSize: '13px', color: '#7c3aed' }}>
+          <Plus style={{ width: '14px', height: '14px' }} /> Add Tag
+        </button>
       )}
 
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete tag "{deleteTarget?.name}"?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {candidateCount > 0
-                ? `This tag is used by ${candidateCount} candidate(s). Remove the tag from all candidates first.`
-                : "This action cannot be undone."}
-            </AlertDialogDescription>
+            <AlertDialogDescription>{candidateCount > 0 ? `This tag is used by ${candidateCount} candidate(s).` : "This action cannot be undone."}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              disabled={candidateCount > 0}
-              onClick={() => {
-                if (!deleteTarget) return;
-                deleteTag.mutate(deleteTarget.id, {
-                  onSuccess: () => {
-                    setDeleteTarget(null);
-                    toast.success("Tag deleted");
-                  },
-                });
-              }}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
+            <AlertDialogAction disabled={candidateCount > 0} onClick={() => { if (!deleteTarget) return; deleteTag.mutate(deleteTarget.id, { onSuccess: () => { setDeleteTarget(null); toast.success("Tag deleted"); } }); }} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -123,17 +83,7 @@ export function TagsSection() {
   );
 }
 
-function TagRow({
-  tag,
-  onUpdateColor,
-  onUpdateName,
-  onDelete,
-}: {
-  tag: Tag & { _count?: { candidates: number } };
-  onUpdateColor: (c: string) => void;
-  onUpdateName: (n: string) => void;
-  onDelete: () => void;
-}) {
+function TagRow({ tag, onUpdateColor, onUpdateName, onDelete }: { tag: Tag & { _count?: { candidates: number } }; onUpdateColor: (c: string) => void; onUpdateName: (n: string) => void; onDelete: () => void }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(tag.name);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -150,62 +100,34 @@ function TagRow({
   }, [draft, tag.name, onUpdateName]);
 
   return (
-    <div className="group flex items-center gap-3 h-10 px-2 rounded hover:bg-row-hover transition-colors">
-      <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab shrink-0" />
-
+    <div className="group flex items-center gap-3 px-2 rounded-[5px] transition-colors"
+      style={{ height: '34px' }}
+      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f8f9'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+    >
+      <GripVertical style={{ width: '14px', height: '14px', color: '#d1d5db', cursor: 'grab', flexShrink: 0 }} />
       <ColorPalettePicker color={tag.color} onChange={onUpdateColor} />
-
       {editing ? (
-        <input
-          ref={inputRef}
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onBlur={save}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") save();
-            if (e.key === "Escape") { setEditing(false); setDraft(tag.name); }
-          }}
-          className="flex-1 bg-background border border-input rounded px-2 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+        <input ref={inputRef} value={draft} onChange={(e) => setDraft(e.target.value)} onBlur={save}
+          onKeyDown={(e) => { if (e.key === "Enter") save(); if (e.key === "Escape") { setEditing(false); setDraft(tag.name); } }}
+          style={{ flex: 1, height: '28px', border: '1px solid #e2e3e6', borderRadius: '6px', padding: '0 8px', fontSize: '13px', color: '#1a1a1a' }}
         />
       ) : (
-        <span
-          className="flex-1 text-sm text-foreground cursor-pointer hover:bg-muted/60 rounded px-1 -mx-1 transition-colors"
-          onClick={() => setEditing(true)}
-        >
+        <span className="flex-1 cursor-pointer rounded px-1 -mx-1 transition-colors hover:bg-[#f3f4f6]" style={{ fontSize: '13px', color: '#1a1a1a' }} onClick={() => setEditing(true)}>
           {tag.name}
         </span>
       )}
-
       {/* Preview pill */}
-      <span
-        className="text-xs px-2 py-0.5 rounded-full font-medium"
-        style={{
-          backgroundColor: `${tag.color}33`,
-          color: tag.color,
-        }}
-      >
+      <span className="rounded-full" style={{ padding: '2px 7px', fontSize: '11px', fontWeight: 500, backgroundColor: `${tag.color}22`, color: tag.color, border: `1px solid ${tag.color}40` }}>
         {tag.name}
       </span>
-
-      {count > 0 && (
-        <span className="text-xs text-muted-foreground">{count} candidates</span>
-      )}
-
+      {count > 0 && <span style={{ fontSize: '11px', color: '#9ca3af' }}>{count} candidates</span>}
       {count > 0 ? (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button className="p-1 opacity-30 cursor-not-allowed" disabled>
-              <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent>Remove tag from all candidates first</TooltipContent>
-        </Tooltip>
+        <Tooltip><TooltipTrigger asChild><button className="p-1 cursor-not-allowed" style={{ opacity: 0.3 }} disabled><Trash2 style={{ width: '14px', height: '14px', color: '#9ca3af' }} /></button></TooltipTrigger><TooltipContent>Remove from all candidates first</TooltipContent></Tooltip>
       ) : (
-        <button
-          onClick={onDelete}
-          className="p-1 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
+        <button onClick={onDelete} className="p-1 opacity-0 group-hover:opacity-100 transition-all" style={{ color: '#9ca3af' }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = '#dc2626'; }} onMouseLeave={(e) => { e.currentTarget.style.color = '#9ca3af'; }}>
+          <Trash2 style={{ width: '14px', height: '14px' }} />
         </button>
       )}
     </div>

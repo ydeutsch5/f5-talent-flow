@@ -58,52 +58,132 @@ export default function Jobs() {
   const isLoading = jobsLoading || statusesLoading;
   const isEmpty = !isLoading && (!jobs || jobs.length === 0);
 
+  const inputStyle: React.CSSProperties = {
+    height: '28px',
+    width: '200px',
+    paddingLeft: '28px',
+    paddingRight: '8px',
+    borderRadius: '6px',
+    border: '1px solid #e2e3e6',
+    fontSize: '13px',
+    color: '#1a1a1a',
+    background: '#ffffff',
+  };
+
   return (
     <div className="flex flex-col h-screen">
-      <div className="flex items-center justify-between px-6 h-14 border-b border-border shrink-0">
-        <h1 className="text-lg font-bold text-foreground">Jobs</h1>
-        <button onClick={() => handleOpenNewJob()} className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity duration-fast">
-          <Plus className="h-3.5 w-3.5" /> New Job
-        </button>
+      {/* Top bar */}
+      <div className="flex items-center justify-between shrink-0" style={{ height: '48px', borderBottom: '1px solid #e9eaec', padding: '0 20px' }}>
+        <h1 style={{ fontSize: '16px', fontWeight: 600, color: '#1a1a1a' }}>Jobs</h1>
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2" style={{ width: '14px', height: '14px', color: '#9ca3af' }} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search jobs…"
+              style={inputStyle}
+              onFocus={(e) => { e.currentTarget.style.borderColor = '#7c3aed'; e.currentTarget.style.boxShadow = '0 0 0 3px #7c3aed18'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = '#e2e3e6'; e.currentTarget.style.boxShadow = 'none'; }}
+            />
+          </div>
+          <button
+            onClick={() => handleOpenNewJob()}
+            className="inline-flex items-center gap-1.5 transition-colors"
+            style={{
+              height: '28px',
+              padding: '0 12px',
+              borderRadius: '6px',
+              backgroundColor: '#7c3aed',
+              color: '#ffffff',
+              fontSize: '13px',
+              fontWeight: 500,
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#6d28d9'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#7c3aed'; }}
+          >
+            <Plus style={{ width: '14px', height: '14px' }} /> New Job
+          </button>
+        </div>
       </div>
 
-      <div className="flex items-center gap-2 px-6 h-10 border-b border-border shrink-0">
-        <button onClick={() => setFilterStatus(null)} className={`inline-flex items-center gap-1.5 h-6 px-2.5 rounded-full text-xs font-medium transition-colors duration-fast border ${filterStatus === null ? "bg-foreground text-background border-foreground" : "bg-transparent text-muted-foreground border-border hover:bg-muted"}`}>All</button>
+      {/* Filter bar */}
+      <div className="flex items-center gap-2 shrink-0" style={{ height: '40px', borderBottom: '1px solid #e9eaec', padding: '0 20px' }}>
+        <button
+          onClick={() => setFilterStatus(null)}
+          className="inline-flex items-center rounded-md transition-colors"
+          style={{
+            height: '28px',
+            padding: '0 10px',
+            fontSize: '13px',
+            fontWeight: 500,
+            border: '1px solid #e2e3e6',
+            backgroundColor: filterStatus === null ? '#f3f4f6' : 'transparent',
+            color: filterStatus === null ? '#1a1a1a' : '#374151',
+          }}
+        >
+          All
+        </button>
         {statuses?.map((s) => (
-          <button key={s.id} onClick={() => setFilterStatus(filterStatus === s.label ? null : s.label)}
-            className={`inline-flex items-center gap-1.5 h-6 px-2.5 rounded-full text-xs font-medium transition-colors duration-fast border ${filterStatus === s.label ? "border-current" : "bg-transparent border-border hover:bg-muted"}`}
-            style={{ color: filterStatus === s.label ? s.color : undefined, borderColor: filterStatus === s.label ? s.color : undefined }}>
-            <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: s.color }} />{s.label}
+          <button
+            key={s.id}
+            onClick={() => setFilterStatus(filterStatus === s.label ? null : s.label)}
+            className="inline-flex items-center gap-1.5 rounded-md transition-colors"
+            style={{
+              height: '28px',
+              padding: '0 10px',
+              fontSize: '13px',
+              fontWeight: 500,
+              border: filterStatus === s.label ? `1px solid ${s.color}` : '1px solid #e2e3e6',
+              backgroundColor: filterStatus === s.label ? `${s.color}15` : 'transparent',
+              color: filterStatus === s.label ? s.color : '#374151',
+            }}
+          >
+            <span className="rounded-full shrink-0" style={{ width: '8px', height: '8px', backgroundColor: s.color }} />
+            {s.label}
           </button>
         ))}
-        <div className="ml-auto relative">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search jobs…"
-            className="h-7 w-48 pl-7 pr-2 rounded-md border border-input bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring transition-colors duration-fast" />
-        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto">
         {isLoading && <JobsSkeletonRows />}
         {isEmpty && (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            <Briefcase className="h-12 w-12 text-muted-foreground/40 mb-3" />
-            <p className="text-lg font-medium text-foreground mb-1">No jobs yet</p>
-            <p className="text-sm text-muted-foreground mb-4">Add your first job to start building your pipeline</p>
-            <button onClick={() => handleOpenNewJob()} className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity duration-fast">
-              <Plus className="h-3.5 w-3.5" /> New Job
+          <div className="flex flex-col items-center justify-center h-full text-center" style={{ padding: '48px 0' }}>
+            <Briefcase style={{ width: '48px', height: '48px', color: '#d1d5db' }} />
+            <p style={{ fontSize: '16px', fontWeight: 600, color: '#374151', marginTop: '16px' }}>No jobs yet</p>
+            <p style={{ fontSize: '13px', color: '#9ca3af', marginTop: '6px', maxWidth: '320px' }}>Add your first job to start building your pipeline</p>
+            <button
+              onClick={() => handleOpenNewJob()}
+              className="inline-flex items-center gap-1.5 transition-colors"
+              style={{
+                height: '28px',
+                padding: '0 12px',
+                borderRadius: '6px',
+                backgroundColor: '#7c3aed',
+                color: '#ffffff',
+                fontSize: '13px',
+                fontWeight: 500,
+                marginTop: '20px',
+              }}
+            >
+              <Plus style={{ width: '14px', height: '14px' }} /> New Job
             </button>
           </div>
         )}
         {!isLoading && !isEmpty && statuses && jobs && (
-          <JobsListView jobs={jobs} statuses={statuses} onUpdate={handleUpdate} onDelete={handleDelete} onOpenDetail={setDetailJob} onNewJob={handleOpenNewJob} searchQuery={searchQuery} filterStatus={filterStatus} selectedIds={selectedIds} onToggleSelect={handleToggleSelect} />
+          <JobsListView
+            jobs={jobs} statuses={statuses} onUpdate={handleUpdate} onDelete={handleDelete}
+            onOpenDetail={setDetailJob} onNewJob={handleOpenNewJob} searchQuery={searchQuery}
+            filterStatus={filterStatus} selectedIds={selectedIds} onToggleSelect={handleToggleSelect}
+          />
         )}
       </div>
 
       {selectedIds.size > 0 && (
-        <div className="flex items-center gap-3 px-6 h-10 border-t border-border bg-muted/50 shrink-0">
-          <span className="text-sm text-muted-foreground">{selectedIds.size} selected</span>
-          <button onClick={() => setSelectedIds(new Set())} className="text-sm text-primary hover:underline">Clear</button>
+        <div className="flex items-center gap-3 shrink-0" style={{ height: '40px', borderTop: '1px solid #e9eaec', padding: '0 20px', backgroundColor: '#f9fafb' }}>
+          <span style={{ fontSize: '13px', color: '#9ca3af' }}>{selectedIds.size} selected</span>
+          <button onClick={() => setSelectedIds(new Set())} style={{ fontSize: '13px', color: '#7c3aed', cursor: 'pointer' }}>Clear</button>
         </div>
       )}
 
