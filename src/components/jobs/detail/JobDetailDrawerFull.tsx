@@ -55,8 +55,8 @@ export function JobDetailDrawer({ job, open, onClose, statuses, onUpdate }: JobD
       <div
         className="flex flex-col bg-white"
         style={{
-          width: '75vw',
-          minWidth: '840px',
+          width: '78vw',
+          minWidth: '1100px',
           maxWidth: '100vw',
           boxShadow: '-8px 0 32px rgba(0,0,0,0.12)',
           transform: visible ? 'translateX(0)' : 'translateX(100%)',
