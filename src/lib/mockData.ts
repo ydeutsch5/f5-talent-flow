@@ -254,7 +254,7 @@ export class MockStore {
     const c = this.candidates.find(c => c.id === candidateId);
     const t = this.tags.find(t => t.id === tagId);
     if (c && t && !c.tags.find(ct => ct.id === tagId)) {
-      c.tags.push({ id: t.id, name: t.name, color: t.color });
+      c.tags.push({ id: t.id, name: t.name, color: t.color } as any);
       t._count.candidates++;
       this.notify();
     }
