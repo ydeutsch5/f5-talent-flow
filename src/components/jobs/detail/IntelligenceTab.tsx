@@ -17,12 +17,14 @@ function CopyableChip({ label, color }: { label: string; color: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-all duration-fast hover:opacity-80"
-      style={{ backgroundColor: `${color}20`, color }}
+      className="inline-flex items-center gap-1 rounded-full transition-colors"
+      style={{ padding: '3px 10px', fontSize: '11px', fontWeight: 500, backgroundColor: `${color}15`, color, border: `1px solid ${color}25` }}
       title="Click to copy"
+      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = `${color}25`; }}
+      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = `${color}15`; }}
     >
       {label}
-      {copied && <Check className="h-3 w-3" />}
+      {copied && <Check style={{ width: '10px', height: '10px' }} />}
     </button>
   );
 }
@@ -30,8 +32,8 @@ function CopyableChip({ label, color }: { label: string; color: string }) {
 function ChipSection({ title, items, color }: { title: string; items: string[]; color: string }) {
   if (!items?.length) return null;
   return (
-    <div className="mb-4">
-      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">{title}</p>
+    <div style={{ marginBottom: '20px' }}>
+      <p style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280', marginBottom: '8px' }}>{title}</p>
       <div className="flex flex-wrap gap-1.5">
         {items.map((item) => (
           <CopyableChip key={item} label={item} color={color} />
@@ -47,14 +49,14 @@ export function IntelligenceTab({ jobId }: IntelligenceTabProps) {
 
   if (isLoading) {
     return (
-      <div className="p-4 space-y-4 animate-pulse">
+      <div style={{ padding: '20px' }} className="space-y-5 animate-pulse">
         {[...Array(6)].map((_, i) => (
           <div key={i} className="space-y-2">
-            <div className="h-3 bg-muted rounded w-24" />
+            <div style={{ height: '10px', width: '80px', backgroundColor: '#f3f4f6', borderRadius: '3px' }} />
             <div className="flex gap-2">
-              <div className="h-6 bg-muted rounded-full w-16" />
-              <div className="h-6 bg-muted rounded-full w-20" />
-              <div className="h-6 bg-muted rounded-full w-14" />
+              <div style={{ height: '24px', width: '60px', backgroundColor: '#f3f4f6', borderRadius: '100px' }} />
+              <div style={{ height: '24px', width: '80px', backgroundColor: '#f3f4f6', borderRadius: '100px' }} />
+              <div style={{ height: '24px', width: '56px', backgroundColor: '#f3f4f6', borderRadius: '100px' }} />
             </div>
           </div>
         ))}
@@ -64,18 +66,21 @@ export function IntelligenceTab({ jobId }: IntelligenceTabProps) {
 
   if (!intel) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center px-6">
-        <Sparkles className="h-10 w-10 text-muted-foreground/40 mb-3" />
-        <p className="text-lg font-medium text-foreground mb-1">Generate Job Intelligence</p>
-        <p className="text-sm text-muted-foreground mb-5 max-w-xs">
+      <div className="flex flex-col items-center justify-center text-center" style={{ padding: '64px 24px' }}>
+        <Sparkles style={{ width: '32px', height: '32px', color: '#d1d5db' }} />
+        <p style={{ fontSize: '14px', fontWeight: 600, color: '#374151', marginTop: '16px' }}>Generate Job Intelligence</p>
+        <p style={{ fontSize: '13px', color: '#9ca3af', marginTop: '6px', maxWidth: '320px' }}>
           AI analyzes this job and extracts key hiring signals, required skills, and recruiter context.
         </p>
         <button
           onClick={() => generate.mutate(jobId)}
           disabled={generate.isPending}
-          className="inline-flex items-center gap-1.5 h-8 px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity duration-fast disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 transition-colors"
+          style={{ marginTop: '20px', height: '32px', padding: '0 14px', borderRadius: '6px', backgroundColor: '#7c3aed', color: '#ffffff', fontSize: '13px', fontWeight: 500, opacity: generate.isPending ? 0.6 : 1 }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#6d28d9'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#7c3aed'; }}
         >
-          <Sparkles className="h-3.5 w-3.5" />
+          <Sparkles style={{ width: '14px', height: '14px' }} />
           {generate.isPending ? "Generating…" : "Generate Intelligence"}
         </button>
       </div>
@@ -85,19 +90,22 @@ export function IntelligenceTab({ jobId }: IntelligenceTabProps) {
   return (
     <div className="flex flex-col h-full overflow-y-auto">
       {/* Regenerate */}
-      <div className="flex justify-end px-4 pt-3">
+      <div className="flex justify-end" style={{ padding: '12px 20px 0' }}>
         <button
           onClick={() => generate.mutate(jobId)}
           disabled={generate.isPending}
-          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors duration-fast"
+          className="inline-flex items-center gap-1 transition-colors"
+          style={{ fontSize: '12px', color: '#9ca3af' }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = '#374151'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = '#9ca3af'; }}
         >
-          <RefreshCw className={`h-3 w-3 ${generate.isPending ? "animate-spin" : ""}`} />
+          <RefreshCw className={generate.isPending ? "animate-spin" : ""} style={{ width: '12px', height: '12px' }} />
           Regenerate
         </button>
       </div>
 
       {/* Two columns */}
-      <div className="grid grid-cols-2 gap-6 px-4 pb-4">
+      <div className="grid grid-cols-2" style={{ gap: '0 32px', padding: '12px 20px 20px' }}>
         {/* Left */}
         <div>
           <ChipSection title="Must Have Skills" items={intel.mustHaveSkills} color="#15803d" />
@@ -109,35 +117,35 @@ export function IntelligenceTab({ jobId }: IntelligenceTabProps) {
         {/* Right */}
         <div>
           {intel.seniorityLevel && (
-            <div className="mb-4">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Seniority Level</p>
-              <span className="inline-flex items-center rounded-md px-3 py-1 text-sm font-semibold bg-muted text-foreground">
+            <div style={{ marginBottom: '20px' }}>
+              <p style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280', marginBottom: '8px' }}>Seniority Level</p>
+              <span className="inline-flex items-center rounded-md" style={{ padding: '4px 10px', fontSize: '13px', fontWeight: 600, backgroundColor: '#f3f4f6', color: '#1a1a1a' }}>
                 {intel.seniorityLevel}
               </span>
             </div>
           )}
 
           {intel.recruiterSummary && (
-            <div className="mb-4">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Recruiter Summary</p>
-              <p className="text-sm text-foreground leading-relaxed">{intel.recruiterSummary}</p>
+            <div style={{ marginBottom: '20px' }}>
+              <p style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280', marginBottom: '8px' }}>Recruiter Summary</p>
+              <p style={{ fontSize: '13px', color: '#374151', lineHeight: 1.5 }}>{intel.recruiterSummary}</p>
             </div>
           )}
 
           {intel.domainContext && (
-            <div className="mb-4">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Domain Context</p>
-              <p className="text-sm text-foreground leading-relaxed">{intel.domainContext}</p>
+            <div style={{ marginBottom: '20px' }}>
+              <p style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280', marginBottom: '8px' }}>Domain Context</p>
+              <p style={{ fontSize: '13px', color: '#374151', lineHeight: 1.5 }}>{intel.domainContext}</p>
             </div>
           )}
 
           {intel.hiringSignals?.length > 0 && (
-            <div className="mb-4">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Hiring Signals</p>
-              <ul className="space-y-1">
-                {intel.hiringSignals.map((s, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-foreground">
-                    <span className="h-1.5 w-1.5 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: "#15803d" }} />
+            <div style={{ marginBottom: '20px' }}>
+              <p style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280', marginBottom: '8px' }}>Hiring Signals</p>
+              <ul style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                {intel.hiringSignals.map((s: string, i: number) => (
+                  <li key={i} className="flex items-start gap-2" style={{ fontSize: '13px', color: '#374151' }}>
+                    <span className="shrink-0 rounded-full" style={{ width: '5px', height: '5px', backgroundColor: '#16a34a', marginTop: '6px' }} />
                     {s}
                   </li>
                 ))}
@@ -146,12 +154,12 @@ export function IntelligenceTab({ jobId }: IntelligenceTabProps) {
           )}
 
           {intel.risks?.length > 0 && (
-            <div className="mb-4">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Risks</p>
-              <ul className="space-y-1">
-                {intel.risks.map((r, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-foreground">
-                    <span className="h-1.5 w-1.5 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: "#dc2626" }} />
+            <div style={{ marginBottom: '20px' }}>
+              <p style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280', marginBottom: '8px' }}>Risks</p>
+              <ul style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                {intel.risks.map((r: string, i: number) => (
+                  <li key={i} className="flex items-start gap-2" style={{ fontSize: '13px', color: '#374151' }}>
+                    <span className="shrink-0 rounded-full" style={{ width: '5px', height: '5px', backgroundColor: '#dc2626', marginTop: '6px' }} />
                     {r}
                   </li>
                 ))}
@@ -162,7 +170,7 @@ export function IntelligenceTab({ jobId }: IntelligenceTabProps) {
       </div>
 
       {/* AI Chat */}
-      <div className="border-t border-border flex-shrink-0">
+      <div style={{ borderTop: '1px solid #e9eaec', flexShrink: 0 }}>
         <JobChatPanel jobId={jobId} />
       </div>
     </div>

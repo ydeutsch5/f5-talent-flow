@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
 
-
 const DEMO_USER = {
   id: "demo-admin-001",
   name: "Demo Admin",
@@ -23,7 +22,6 @@ export default function Login() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    // Mock login — no API call
     await new Promise(r => setTimeout(r, 400));
     setUser({ id: "user-001", name: "Joel Davis", email: email || "joel@f5recruiting.com", role: "admin" });
     setLoading(false);
@@ -38,14 +36,15 @@ export default function Login() {
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
-    height: '32px',
+    height: '36px',
     border: '1px solid #e2e3e6',
     borderRadius: '6px',
     fontSize: '13px',
     color: '#1a1a1a',
-    padding: '0 10px',
+    padding: '0 12px',
     background: '#ffffff',
     outline: 'none',
+    transition: 'border-color 150ms ease, box-shadow 150ms ease',
   };
 
   return (
@@ -58,19 +57,20 @@ export default function Login() {
           backgroundColor: '#ffffff',
           border: '1px solid #e9eaec',
           borderRadius: '8px',
-          padding: '32px',
+          padding: '36px 32px 32px',
         }}
       >
-        <div className="flex items-center justify-center mb-8">
-          <div className="h-8 w-8 rounded-md flex items-center justify-center" style={{ backgroundColor: '#7c3aed' }}>
-            <span className="text-white text-sm font-bold">F5</span>
+        {/* Logo */}
+        <div className="flex items-center justify-center" style={{ marginBottom: '32px' }}>
+          <div className="flex items-center justify-center shrink-0" style={{ width: '32px', height: '32px', borderRadius: '6px', backgroundColor: '#7c3aed' }}>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff' }}>F5</span>
           </div>
-          <span className="text-[16px] font-semibold ml-2" style={{ color: '#1a1a1a' }}>F5 Hiring Solutions</span>
+          <span style={{ fontSize: '16px', fontWeight: 600, color: '#1a1a1a', marginLeft: '10px' }}>F5 Hiring Solutions</span>
         </div>
 
-        <div className="space-y-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#374151', marginBottom: '4px' }}>Email</label>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>Email</label>
             <input
               type="email"
               required
@@ -84,7 +84,7 @@ export default function Login() {
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#374151', marginBottom: '4px' }}>Password</label>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>Password</label>
             <input
               type="password"
               required
@@ -97,30 +97,34 @@ export default function Login() {
             />
           </div>
 
-          {error && <p style={{ fontSize: '11px', color: '#dc2626' }}>{error}</p>}
+          {error && <p style={{ fontSize: '12px', color: '#dc2626', margin: 0 }}>{error}</p>}
 
           <button
             type="submit"
             disabled={loading}
             style={{
               width: '100%',
-              height: '28px',
+              height: '36px',
               borderRadius: '6px',
               backgroundColor: '#7c3aed',
               color: '#ffffff',
               fontSize: '13px',
-              fontWeight: 500,
+              fontWeight: 600,
               border: 'none',
               cursor: loading ? 'not-allowed' : 'pointer',
-              opacity: loading ? 0.5 : 1,
+              opacity: loading ? 0.6 : 1,
+              transition: 'background-color 150ms ease, opacity 150ms ease',
+              marginTop: '4px',
             }}
+            onMouseEnter={(e) => { if (!loading) e.currentTarget.style.backgroundColor = '#6d28d9'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#7c3aed'; }}
           >
             {loading ? "Signing in…" : "Sign In"}
           </button>
 
-          <div className="relative my-3">
+          <div className="relative" style={{ margin: '4px 0' }}>
             <div className="absolute inset-0 flex items-center"><span className="w-full" style={{ borderTop: '1px solid #e9eaec' }} /></div>
-            <div className="relative flex justify-center"><span style={{ backgroundColor: '#ffffff', padding: '0 8px', fontSize: '11px', textTransform: 'uppercase', color: '#9ca3af' }}>or</span></div>
+            <div className="relative flex justify-center"><span style={{ backgroundColor: '#ffffff', padding: '0 10px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#9ca3af' }}>or</span></div>
           </div>
 
           <button
@@ -128,7 +132,7 @@ export default function Login() {
             onClick={handleDemo}
             style={{
               width: '100%',
-              height: '28px',
+              height: '36px',
               borderRadius: '6px',
               backgroundColor: 'transparent',
               color: '#374151',
@@ -136,6 +140,7 @@ export default function Login() {
               fontWeight: 500,
               border: '1px solid #e2e3e6',
               cursor: 'pointer',
+              transition: 'background-color 150ms ease',
             }}
             onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f3f4f6'; }}
             onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}

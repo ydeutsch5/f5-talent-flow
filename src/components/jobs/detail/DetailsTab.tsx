@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Check, X, AlertCircle } from "lucide-react";
+import { Check, AlertCircle } from "lucide-react";
 import { InlineEdit } from "../InlineEdit";
 import { StatusBadge } from "../StatusBadge";
 import { HoursChip } from "../HoursChip";
@@ -13,20 +13,29 @@ interface DetailsTabProps {
 
 function SaveIndicator({ status }: { status: "idle" | "saved" | "error" }) {
   if (status === "saved") {
-    return (
-      <span className="inline-flex items-center gap-0.5 text-xs ml-2" style={{ color: "#15803d" }}>
-        <Check className="h-3 w-3" /> Saved
-      </span>
-    );
+    return <span className="inline-flex items-center gap-0.5 ml-2" style={{ fontSize: '10px', color: "#16a34a" }}><Check style={{ width: '10px', height: '10px' }} /> Saved</span>;
   }
   if (status === "error") {
-    return (
-      <span className="inline-flex items-center gap-0.5 text-xs text-destructive ml-2">
-        <AlertCircle className="h-3 w-3" /> Failed to save
-      </span>
-    );
+    return <span className="inline-flex items-center gap-0.5 ml-2" style={{ fontSize: '10px', color: "#dc2626" }}><AlertCircle style={{ width: '10px', height: '10px' }} /> Failed</span>;
   }
   return null;
+}
+
+function FieldLabel({ children, saveState }: { children: React.ReactNode; saveState?: "idle" | "saved" | "error" }) {
+  return (
+    <p className="flex items-center" style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280', marginBottom: '8px' }}>
+      {children}
+      {saveState && <SaveIndicator status={saveState} />}
+    </p>
+  );
+}
+
+function SectionDivider({ label }: { label: string }) {
+  return (
+    <div style={{ paddingTop: '8px', paddingBottom: '4px', borderTop: '1px solid #f3f4f6', marginTop: '4px' }}>
+      <span style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#9ca3af' }}>{label}</span>
+    </div>
+  );
 }
 
 export function DetailsTab({ job, statuses }: DetailsTabProps) {
@@ -46,92 +55,85 @@ export function DetailsTab({ job, statuses }: DetailsTabProps) {
     [job.id, updateJob]
   );
 
-  const fieldLabel = "text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center";
-
   return (
-    <div className="p-4 overflow-y-auto space-y-6">
-      {/* Two columns */}
-      <div className="grid grid-cols-2 gap-x-6 gap-y-5">
-        {/* Left */}
+    <div style={{ padding: '20px', overflow: 'auto' }}>
+      {/* Job Info Grid */}
+      <div className="grid grid-cols-2" style={{ gap: '20px 32px' }}>
         <div>
-          <p className={fieldLabel}>Role Title <SaveIndicator status={saveStates["roleTitle"] || "idle"} /></p>
-          <InlineEdit value={job.roleTitle} onSave={(v) => handleSave("roleTitle", v)} className="text-sm text-foreground" />
+          <FieldLabel saveState={saveStates["roleTitle"]}>Role Title</FieldLabel>
+          <InlineEdit value={job.roleTitle} onSave={(v) => handleSave("roleTitle", v)} className="text-[13px]" />
         </div>
         <div>
-          <p className={fieldLabel}>Working Hours <SaveIndicator status={saveStates["workingHours"] || "idle"} /></p>
+          <FieldLabel saveState={saveStates["workingHours"]}>Working Hours</FieldLabel>
           <HoursChip value={job.workingHours} onSave={(v) => handleSave("workingHours", v)} />
         </div>
 
         <div>
-          <p className={fieldLabel}>Client Name <SaveIndicator status={saveStates["clientName"] || "idle"} /></p>
-          <InlineEdit value={job.clientName} onSave={(v) => handleSave("clientName", v)} className="text-sm text-foreground" />
+          <FieldLabel saveState={saveStates["clientName"]}>Client</FieldLabel>
+          <InlineEdit value={job.clientName} onSave={(v) => handleSave("clientName", v)} className="text-[13px]" />
         </div>
         <div>
-          <p className={fieldLabel}>Status <SaveIndicator status={saveStates["status"] || "idle"} /></p>
+          <FieldLabel saveState={saveStates["status"]}>Status</FieldLabel>
           <StatusBadge currentStatus={job.status} statuses={statuses} onChangeStatus={(s) => handleSave("status", s)} />
         </div>
 
         <div>
-          <p className={fieldLabel}>Client Website <SaveIndicator status={saveStates["clientWebsite"] || "idle"} /></p>
-          {job.clientWebsite ? (
-            <InlineEdit
-              value={job.clientWebsite}
-              onSave={(v) => handleSave("clientWebsite", v)}
-              className="text-sm text-primary hover:underline"
-            />
-          ) : (
-            <InlineEdit value="—" onSave={(v) => handleSave("clientWebsite", v)} className="text-sm text-muted-foreground" />
-          )}
+          <FieldLabel saveState={saveStates["clientWebsite"]}>Website</FieldLabel>
+          <InlineEdit
+            value={job.clientWebsite || "—"}
+            onSave={(v) => handleSave("clientWebsite", v === "—" ? null : v)}
+            className="text-[13px]"
+          />
         </div>
         <div>
-          <p className={fieldLabel}>Created</p>
-          <p className="text-sm text-foreground">{format(new Date(job.createdAt), "MMM d, yyyy 'at' h:mm a")}</p>
+          <FieldLabel saveState={saveStates["weeklyBudget"]}>Budget</FieldLabel>
+          <InlineEdit value={job.weeklyBudget || "—"} onSave={(v) => handleSave("weeklyBudget", v === "—" ? null : v)} className="text-[13px]" />
         </div>
 
         <div>
-          <p className={fieldLabel}>Industry <SaveIndicator status={saveStates["industry"] || "idle"} /></p>
-          <InlineEdit value={job.industry || "—"} onSave={(v) => handleSave("industry", v === "—" ? null : v)} className="text-sm text-foreground" />
+          <FieldLabel saveState={saveStates["industry"]}>Industry</FieldLabel>
+          <InlineEdit value={job.industry || "—"} onSave={(v) => handleSave("industry", v === "—" ? null : v)} className="text-[13px]" />
         </div>
         <div>
-          <p className={fieldLabel}>Last Updated</p>
-          <p className="text-sm text-foreground">{formatDistanceToNow(new Date(job.updatedAt), { addSuffix: true })}</p>
-        </div>
-
-        <div>
-          <p className={fieldLabel}>Weekly Budget <SaveIndicator status={saveStates["weeklyBudget"] || "idle"} /></p>
-          <InlineEdit value={job.weeklyBudget || "—"} onSave={(v) => handleSave("weeklyBudget", v === "—" ? null : v)} className="text-sm text-foreground" />
+          <FieldLabel>Created</FieldLabel>
+          <span style={{ fontSize: '13px', color: '#374151' }}>{format(new Date(job.createdAt), "MMM d, yyyy")}</span>
+          <span style={{ fontSize: '11px', color: '#9ca3af', marginLeft: '8px' }}>({formatDistanceToNow(new Date(job.createdAt), { addSuffix: true })})</span>
         </div>
       </div>
 
-      {/* Full-width text areas */}
-      <div>
-        <p className={fieldLabel}>Must Have Requirements <SaveIndicator status={saveStates["mustHaveRequirements"] || "idle"} /></p>
-        <InlineEdit
-          value={job.mustHaveRequirements || "—"}
-          onSave={(v) => handleSave("mustHaveRequirements", v === "—" ? "" : v)}
-          as="textarea"
-          className="text-sm text-foreground w-full"
-        />
-      </div>
-
-      <div>
-        <p className={fieldLabel}>Nice To Have Requirements <SaveIndicator status={saveStates["niceToHave"] || "idle"} /></p>
-        <InlineEdit
-          value={job.niceToHave || "—"}
-          onSave={(v) => handleSave("niceToHave", v === "—" ? "" : v)}
-          as="textarea"
-          className="text-sm text-foreground w-full"
-        />
-      </div>
-
-      <div>
-        <p className={fieldLabel}>Responsibilities <SaveIndicator status={saveStates["responsibilities"] || "idle"} /></p>
-        <InlineEdit
-          value={job.responsibilities || "—"}
-          onSave={(v) => handleSave("responsibilities", v === "—" ? "" : v)}
-          as="textarea"
-          className="text-sm text-foreground w-full"
-        />
+      {/* Requirements */}
+      <SectionDivider label="Requirements" />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '12px' }}>
+        <div>
+          <FieldLabel saveState={saveStates["mustHaveRequirements"]}>Must Have</FieldLabel>
+          <InlineEdit
+            value={job.mustHaveRequirements || "—"}
+            onSave={(v) => handleSave("mustHaveRequirements", v === "—" ? "" : v)}
+            as="textarea"
+            className="text-[13px] w-full"
+            inputClassName="min-h-[60px]"
+          />
+        </div>
+        <div>
+          <FieldLabel saveState={saveStates["niceToHave"]}>Nice To Have</FieldLabel>
+          <InlineEdit
+            value={job.niceToHave || "—"}
+            onSave={(v) => handleSave("niceToHave", v === "—" ? "" : v)}
+            as="textarea"
+            className="text-[13px] w-full"
+            inputClassName="min-h-[60px]"
+          />
+        </div>
+        <div>
+          <FieldLabel saveState={saveStates["responsibilities"]}>Responsibilities</FieldLabel>
+          <InlineEdit
+            value={job.responsibilities || "—"}
+            onSave={(v) => handleSave("responsibilities", v === "—" ? "" : v)}
+            as="textarea"
+            className="text-[13px] w-full"
+            inputClassName="min-h-[60px]"
+          />
+        </div>
       </div>
     </div>
   );
