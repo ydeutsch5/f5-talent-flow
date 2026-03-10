@@ -112,7 +112,7 @@ function TagRow({ tag, onUpdateColor, onUpdateName, onDelete }: { tag: Tag & { _
       {editing ? (
         <input ref={inputRef} value={draft} onChange={(e) => setDraft(e.target.value)} onBlur={save}
           onKeyDown={(e) => { if (e.key === "Enter") save(); if (e.key === "Escape") { setEditing(false); setDraft(tag.name); } }}
-          style={{ flex: 1, height: '28px', border: '1px solid #e2e3e6', borderRadius: '6px', padding: '0 8px', fontSize: '13px', color: '#1a1a1a' }}
+          style={{ flex: 1, height: '32px', border: '1px solid #e2e3e6', borderRadius: '6px', padding: '0 10px', fontSize: '14px', color: '#1a1a1a' }}
         />
       ) : (
         <span className="flex-1 cursor-pointer rounded px-1 -mx-1 transition-colors hover:bg-[#f3f4f6]" style={{ fontSize: '13px', color: '#1a1a1a' }} onClick={() => setEditing(true)}>
