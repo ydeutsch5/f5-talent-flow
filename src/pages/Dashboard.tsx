@@ -136,6 +136,7 @@ export default function Dashboard() {
   const updateCandidate = useUpdateCandidateFull();
   const [drawerCandidate, setDrawerCandidate] = useState<Candidate | null>(null);
 
+  const allMatches = useMemo(() => mockStore.getMatches(), [jobs]);
   const activeJobs = useMemo(() => jobs.filter((j) => j.status === "Active"), [jobs]);
   const onHoldJobs = useMemo(() => jobs.filter((j) => j.status === "On Hold"), [jobs]);
   const newCandidatesThisWeek = useMemo(() => candidates.filter((c) => isThisWeek(c.createdAt)), [candidates]);
