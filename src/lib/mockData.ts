@@ -241,7 +241,7 @@ export class MockStore {
   }
 
   createTag(data: { name: string; color: string }) {
-    const t = { id: uid(), name: data.name, color: data.color, _count: { candidates: 0 } };
+    const t = { id: uid(), name: data.name, color: data.color, _count: { candidates: 0 } } as typeof this.tags[number];
     this.tags.push(t); this.notify(); return t;
   }
   updateTag(id: string, data: { name?: string; color?: string }) {
