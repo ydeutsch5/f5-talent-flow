@@ -39,7 +39,7 @@ export function ResumeEvaluator({ jobId }: ResumeEvaluatorProps) {
       setEditEmail(res.candidateEmail || "");
       setEditTitle(res.candidateTitle || "");
     } catch (err: any) {
-      toast({ title: "Evaluation failed", description: err.message, variant: "destructive" });
+      toast.error(err.message, { duration: 8000 });
     }
   };
 
