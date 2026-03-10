@@ -31,7 +31,7 @@ export function TagsSection() {
           setAdding(false);
           setNewName("");
           setNewColor("#8b5cf6");
-          toast({ title: "Tag created" });
+          toast.success("Tag created");
         },
       }
     );
