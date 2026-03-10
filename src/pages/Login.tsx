@@ -23,15 +23,11 @@ export default function Login() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    try {
-      const data = await api.post("/auth/login", { email, password });
-      setUser(data.user);
-      navigate("/dashboard", { replace: true });
-    } catch (err: any) {
-      setError(err.message || "Login failed");
-    } finally {
-      setLoading(false);
-    }
+    // Mock login — no API call
+    await new Promise(r => setTimeout(r, 400));
+    setUser({ id: "user-001", name: "Joel Davis", email: email || "joel@f5recruiting.com", role: "admin" });
+    setLoading(false);
+    navigate("/dashboard", { replace: true });
   };
 
   const handleDemo = () => {
