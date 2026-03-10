@@ -7,6 +7,7 @@ import { useSubmissions } from "@/hooks/useSubmissions";
 import { useRecentActivity, type RecentActivityEntry } from "@/hooks/useRecentActivity";
 import { useUpdateCandidateFull } from "@/hooks/useCandidates";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { mockStore } from "@/lib/mockData";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { CandidateDetailDrawer } from "@/components/candidates/detail/CandidateDetailDrawer";

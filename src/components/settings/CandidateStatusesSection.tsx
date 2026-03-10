@@ -122,31 +122,28 @@ function StatusRow({ status, idx, onDragStart, onDragOver, onDragEnd, isDragging
   return (
     <div draggable onDragStart={() => onDragStart(idx)} onDragOver={(e) => onDragOver(e, idx)} onDragEnd={onDragEnd}
       className="group flex items-center gap-3 px-2 rounded-[5px] transition-colors"
-      style={{ height: '34px', opacity: isDragging ? 0.5 : 1, backgroundColor: isDragging ? '#f3f4f6' : 'transparent' }}
+      style={{ height: '40px', opacity: isDragging ? 0.5 : 1, backgroundColor: isDragging ? '#f3f4f6' : 'transparent' }}
       onMouseEnter={(e) => { if (!isDragging) e.currentTarget.style.backgroundColor = '#f7f8f9'; }}
       onMouseLeave={(e) => { if (!isDragging) e.currentTarget.style.backgroundColor = 'transparent'; }}
     >
       <GripVertical style={{ width: '14px', height: '14px', color: '#d1d5db', cursor: 'grab', flexShrink: 0 }} />
-      <ColorPalettePicker color={status.color} onChange={onUpdateColor} />
+      <ColorPalettePicker color={status.color} onChange={onUpdateColor} size={16} />
       {editing ? (
         <input ref={inputRef} value={draft} onChange={(e) => setDraft(e.target.value)} onBlur={save}
           onKeyDown={(e) => { if (e.key === "Enter") save(); if (e.key === "Escape") { setEditing(false); setDraft(status.label); } }}
-          style={{ flex: 1, height: '28px', border: '1px solid #e2e3e6', borderRadius: '6px', padding: '0 8px', fontSize: '13px', color: '#1a1a1a' }}
+          style={{ flex: 1, height: '32px', border: '1px solid #e2e3e6', borderRadius: '6px', padding: '0 10px', fontSize: '14px', color: '#1a1a1a' }}
           onFocus={(e) => { e.currentTarget.style.borderColor = '#7c3aed'; e.currentTarget.style.boxShadow = '0 0 0 3px #7c3aed18'; }}
         />
       ) : (
-        <span className="flex-1 cursor-pointer rounded px-1 -mx-1 transition-colors hover:bg-[#f3f4f6]" style={{ fontSize: '13px', color: '#1a1a1a' }} onClick={() => setEditing(true)}>
+        <span className="flex-1 cursor-pointer rounded px-1.5 -mx-1 transition-colors hover:bg-[#f3f4f6]" style={{ fontSize: '14px', color: '#1a1a1a' }} onClick={() => setEditing(true)}>
           {status.label}
         </span>
       )}
-      {(status as any).isDefault ? (
-        <Tooltip><TooltipTrigger asChild><button className="p-1 cursor-not-allowed" style={{ opacity: 0.3 }} disabled><Trash2 style={{ width: '14px', height: '14px', color: '#9ca3af' }} /></button></TooltipTrigger><TooltipContent>Cannot delete default</TooltipContent></Tooltip>
-      ) : (
-        <button onClick={onDelete} className="p-1 opacity-0 group-hover:opacity-100 transition-all" style={{ color: '#9ca3af' }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = '#dc2626'; }} onMouseLeave={(e) => { e.currentTarget.style.color = '#9ca3af'; }}>
-          <Trash2 style={{ width: '14px', height: '14px' }} />
-        </button>
-      )}
+      <span className="shrink-0" />
+      <button onClick={onDelete} className="p-1 opacity-0 group-hover:opacity-100 transition-all" style={{ color: '#9ca3af' }}
+        onMouseEnter={(e) => { e.currentTarget.style.color = '#dc2626'; }} onMouseLeave={(e) => { e.currentTarget.style.color = '#9ca3af'; }}>
+        <Trash2 style={{ width: '14px', height: '14px' }} />
+      </button>
     </div>
   );
 }

@@ -123,7 +123,7 @@ export function JobDetailDrawer({ job, open, onClose, statuses, onUpdate }: JobD
             {activeTab === "Candidates" && <CandidatesTab jobId={job.id} />}
             {activeTab === "Intelligence" && <IntelligenceTab jobId={job.id} />}
             {activeTab === "Details" && <DetailsTab job={job} statuses={statuses} />}
-            {activeTab === "Activity" && <ActivityFeed jobId={job.id} />}
+            {activeTab === "Activity" && <ActivityFeed jobId={job.id} expanded />}
           </div>
 
           {/* Right activity panel — condensed */}

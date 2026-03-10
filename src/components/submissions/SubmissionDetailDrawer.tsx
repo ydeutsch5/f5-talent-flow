@@ -48,7 +48,7 @@ export function SubmissionDetailDrawer({ submission: s, open, onClose, onUpdate,
   return (
     <div className="fixed inset-0 z-50 flex">
       <div className="flex-1 transition-opacity" style={{ backgroundColor: 'rgba(0,0,0,0.15)', opacity: visible ? 1 : 0, transitionDuration: '260ms' }} onClick={onClose} />
-      <div className="flex flex-col bg-white" style={{ width: '560px', maxWidth: '100%', boxShadow: '-8px 0 32px rgba(0,0,0,0.12)', transform: visible ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 260ms cubic-bezier(0.32,0.72,0,1)' }}>
+      <div className="flex flex-col bg-white" style={{ width: '480px', maxWidth: '100%', boxShadow: '-8px 0 32px rgba(0,0,0,0.12)', transform: visible ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 260ms cubic-bezier(0.32,0.72,0,1)' }}>
         {/* Header */}
         <div className="flex items-center justify-between shrink-0" style={{ height: '56px', borderBottom: '1px solid #e9eaec', padding: '0 20px' }}>
           <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#1a1a1a' }}>Submission Detail</h2>

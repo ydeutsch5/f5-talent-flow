@@ -51,7 +51,7 @@ export function CandidateDetailDrawer({ candidate, open, onClose, statuses, onUp
       {/* Backdrop */}
       <div
         className="flex-1 transition-opacity"
-        style={{ backgroundColor: 'rgba(0,0,0,0.15)', opacity: visible ? 1 : 0, transitionDuration: '260ms' }}
+        style={{ backgroundColor: 'rgba(0,0,0,0.2)', opacity: visible ? 1 : 0, transitionDuration: '260ms' }}
         onClick={onClose}
       />
 

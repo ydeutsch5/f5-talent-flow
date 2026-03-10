@@ -21,8 +21,8 @@ export function ColorPalettePicker({ color, onChange, size = 16 }: Props) {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          className="w-4 h-4 rounded-full shrink-0 ring-1 ring-border cursor-pointer hover:scale-110 transition-transform"
-          style={{ backgroundColor: color }}
+          className="rounded-full shrink-0 ring-1 ring-border cursor-pointer hover:scale-110 transition-transform"
+          style={{ backgroundColor: color, width: `${size}px`, height: `${size}px` }}
         />
       </PopoverTrigger>
       <PopoverContent className="w-auto p-2" align="start">

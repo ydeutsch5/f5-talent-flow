@@ -23,9 +23,8 @@ export interface Match {
 
 export function useMatches(jobId: string | undefined) {
   return useQuery<Match[]>({
-    queryKey: ["matches", jobId],
+    queryKey: ["matches", jobId ?? "all"],
     queryFn: () => mockStore.getMatches(jobId) as Match[],
-    enabled: !!jobId,
     select: (data) => data.filter((m) => m.matchPercentage != null),
     staleTime: Infinity,
   });
