@@ -11,9 +11,10 @@ const PALETTE = [
 interface Props {
   color: string;
   onChange: (color: string) => void;
+  size?: number;
 }
 
-export function ColorPalettePicker({ color, onChange }: Props) {
+export function ColorPalettePicker({ color, onChange, size = 16 }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
