@@ -6,11 +6,11 @@ import { SubmissionDetailDrawer } from "@/components/submissions/SubmissionDetai
 import { toast } from "@/hooks/use-toast";
 
 const STATUS_FILTERS = [
-  { label: "All", value: null },
-  { label: "Pending", value: "Pending", bg: "#fef3c7", text: "#d97706" },
-  { label: "Approved", value: "Approved", bg: "#dcfce7", text: "#15803d" },
-  { label: "Rejected", value: "Rejected", bg: "#fee2e2", text: "#dc2626" },
-] as const;
+  { label: "All", value: null as string | null, bg: undefined as string | undefined, text: undefined as string | undefined },
+  { label: "Pending", value: "Pending" as string | null, bg: "#fef3c7" as string | undefined, text: "#d97706" as string | undefined },
+  { label: "Approved", value: "Approved" as string | null, bg: "#dcfce7" as string | undefined, text: "#15803d" as string | undefined },
+  { label: "Rejected", value: "Rejected" as string | null, bg: "#fee2e2" as string | undefined, text: "#dc2626" as string | undefined },
+];
 
 export default function Submissions() {
   const { data: submissions, isLoading } = useSubmissions();
