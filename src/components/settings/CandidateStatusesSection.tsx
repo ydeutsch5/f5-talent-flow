@@ -61,7 +61,7 @@ export function CandidateStatusesSection() {
           setAdding(false);
           setNewLabel("");
           setNewColor("#374151");
-          toast({ title: "Status created" });
+          toast.success("Status created");
         },
       }
     );
