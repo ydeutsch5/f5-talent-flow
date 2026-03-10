@@ -126,10 +126,10 @@ export function JobDetailDrawer({ job, open, onClose, statuses, onUpdate }: JobD
             {activeTab === "Activity" && <ActivityFeed jobId={job.id} />}
           </div>
 
-          {/* Right activity panel */}
+          {/* Right activity panel — condensed */}
           <div className="overflow-auto" style={{ flex: '0 0 35%', borderLeft: '1px solid #e9eaec', padding: '16px' }}>
             <p style={{ fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#9ca3af', marginBottom: '12px' }}>Activity</p>
-            <ActivityFeed jobId={job.id} />
+            <ActivityFeed jobId={job.id} showCommentBox={false} condensed />
           </div>
         </div>
       </div>
