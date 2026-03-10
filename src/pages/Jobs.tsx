@@ -3,7 +3,7 @@ import { Plus, Search, Briefcase } from "lucide-react";
 import { useJobs, useJobStatuses, useUpdateJob, useDeleteJob, type Job } from "@/hooks/useJobs";
 import { JobsListView } from "@/components/jobs/JobsListView";
 import { NewJobDrawer } from "@/components/jobs/NewJobDrawer";
-import { JobDetailDrawer } from "@/components/jobs/JobDetailDrawer";
+import { JobDetailDrawer } from "@/components/jobs/detail/JobDetailDrawerFull";
 import { JobsSkeletonRows } from "@/components/jobs/JobsSkeletonRows";
 
 export default function Jobs() {
