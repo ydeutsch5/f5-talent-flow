@@ -63,7 +63,7 @@ export function ResumeEvaluator({ jobId }: ResumeEvaluatorProps) {
       setResult(null);
       setExpanded(false);
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast.error(err.message, { duration: 8000 });
     }
   };
 

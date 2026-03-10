@@ -72,7 +72,7 @@ export function CandidateStatusesSection() {
     deleteStatus.mutate(deleteTarget.id, {
       onSuccess: () => {
         setDeleteTarget(null);
-        toast({ title: "Status deleted" });
+        toast.success("Status deleted");
       },
     });
   };

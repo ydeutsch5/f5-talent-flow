@@ -108,7 +108,7 @@ export function TagsSection() {
                 deleteTag.mutate(deleteTarget.id, {
                   onSuccess: () => {
                     setDeleteTarget(null);
-                    toast({ title: "Tag deleted" });
+                    toast.success("Tag deleted");
                   },
                 });
               }}

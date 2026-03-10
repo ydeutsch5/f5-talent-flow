@@ -176,7 +176,7 @@ export function TeamMembersSection() {
                 deactivateUser.mutate(deactivateTarget.id, {
                   onSuccess: () => {
                     setDeactivateTarget(null);
-                    toast({ title: `${deactivateTarget.name} has been deactivated` });
+                    toast.success(`${deactivateTarget.name} has been deactivated`);
                   },
                 });
               }}
