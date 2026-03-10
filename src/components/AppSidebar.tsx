@@ -19,7 +19,11 @@ const NAV_ITEMS = [
   { label: "Settings", path: "/settings", icon: Settings },
 ];
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  onClose?: () => void;
+}
+
+export function AppSidebar({ onClose }: AppSidebarProps) {
   const location = useLocation();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
@@ -32,11 +36,11 @@ export function AppSidebar() {
     .toUpperCase() ?? "?";
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-sidebar bg-sidebar-bg flex flex-col z-50">
+    <aside className="fixed left-0 top-0 bottom-0 w-sidebar bg-[#1e1f21] flex flex-col z-50">
       {/* Logo */}
       <div className="h-14 flex items-center px-5">
         <span className="text-lg font-bold text-primary">F5</span>
-        <span className="text-lg font-semibold text-sidebar-fg ml-1.5">Hiring</span>
+        <span className="text-lg font-semibold text-white ml-1.5">Hiring</span>
       </div>
 
       {/* Nav */}
@@ -47,12 +51,13 @@ export function AppSidebar() {
             <Link
               key={path}
               to={path}
+              onClick={onClose}
               className={`
                 flex items-center gap-3 px-3 h-9 rounded-md text-sm font-medium
                 transition-colors duration-fast
                 ${active
-                  ? "bg-[hsl(var(--sidebar-active-bg))] text-sidebar-fg border-l-[3px] border-primary -ml-[3px] pl-[calc(0.75rem+3px)]"
-                  : "text-sidebar-fg/70 hover:bg-sidebar-hover hover:text-sidebar-fg"
+                  ? "border-l-[3px] border-primary text-primary bg-primary/5 -ml-[3px] pl-[calc(0.75rem+3px)]"
+                  : "text-white/70 hover:bg-[#ffffff15] hover:text-white"
                 }
               `}
             >
@@ -64,17 +69,17 @@ export function AppSidebar() {
       </nav>
 
       {/* User */}
-      <div className="px-3 py-3 border-t border-sidebar-fg/10 flex items-center gap-3">
+      <div className="px-3 py-3 border-t border-white/10 flex items-center gap-3">
         <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-xs font-semibold text-primary-foreground shrink-0">
           {initials}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-sidebar-fg truncate">{user?.name}</p>
-          <p className="text-xs text-sidebar-fg/50 capitalize">{user?.role}</p>
+          <p className="text-sm font-medium text-white truncate">{user?.name}</p>
+          <p className="text-xs text-white/50 capitalize">{user?.role}</p>
         </div>
         <button
           onClick={logout}
-          className="text-sidebar-fg/50 hover:text-sidebar-fg transition-colors duration-fast p-1"
+          className="text-white/50 hover:text-white transition-colors duration-fast p-1"
           title="Logout"
         >
           <LogOut className="h-4 w-4" />

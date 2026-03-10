@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { ChevronDown, ChevronUp, Upload, Check } from "lucide-react";
 import { useEvaluateResume, useCreateCandidate } from "@/hooks/useMatches";
 import { getMatchColor } from "./matchUtils";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 interface ResumeEvaluatorProps {
   jobId: string;
@@ -39,7 +39,7 @@ export function ResumeEvaluator({ jobId }: ResumeEvaluatorProps) {
       setEditEmail(res.candidateEmail || "");
       setEditTitle(res.candidateTitle || "");
     } catch (err: any) {
-      toast({ title: "Evaluation failed", description: err.message, variant: "destructive" });
+      toast.error(err.message, { duration: 8000 });
     }
   };
 
@@ -59,11 +59,11 @@ export function ResumeEvaluator({ jobId }: ResumeEvaluatorProps) {
         matchPercentage: result!.matchPercentage,
         matchBand: result!.matchBand,
       });
-      toast({ title: "Candidate added", description: `${editName} has been added to the pipeline.` });
+      toast.success("Candidate added");
       setResult(null);
       setExpanded(false);
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast.error(err.message, { duration: 8000 });
     }
   };
 

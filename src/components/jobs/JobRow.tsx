@@ -170,9 +170,9 @@ export function JobRow({
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete job?</AlertDialogTitle>
+            <AlertDialogTitle>Delete "{job.roleTitle}"?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete "{job.roleTitle}". This action cannot be undone.
+              This will remove all candidate evaluations for this job. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

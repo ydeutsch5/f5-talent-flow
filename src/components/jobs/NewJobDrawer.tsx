@@ -3,7 +3,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useCreateJob, type JobStatus } from "@/hooks/useJobs";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 const schema = z.object({
   roleTitle: z.string().min(1, "Role title is required"),
@@ -55,11 +55,11 @@ export function NewJobDrawer({ open, onClose, statuses, defaultStatus }: NewJobD
   const onSubmit = async (data: FormValues) => {
     try {
       await createJob.mutateAsync(data);
-      toast({ title: "Job created", description: `"${data.roleTitle}" has been added.` });
+      toast.success("Job created");
       reset();
       onClose();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast.error(err.message, { duration: 8000 });
     }
   };
 

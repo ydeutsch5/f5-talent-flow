@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 export function CandidateStatusesSection() {
   const { data: statuses = [], isLoading } = useCandidateStatuses();
@@ -61,7 +61,7 @@ export function CandidateStatusesSection() {
           setAdding(false);
           setNewLabel("");
           setNewColor("#374151");
-          toast({ title: "Status created" });
+          toast.success("Status created");
         },
       }
     );
@@ -72,7 +72,7 @@ export function CandidateStatusesSection() {
     deleteStatus.mutate(deleteTarget.id, {
       onSuccess: () => {
         setDeleteTarget(null);
-        toast({ title: "Status deleted" });
+        toast.success("Status deleted");
       },
     });
   };

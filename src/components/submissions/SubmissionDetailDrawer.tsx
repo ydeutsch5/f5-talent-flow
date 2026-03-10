@@ -150,10 +150,11 @@ export function SubmissionDetailDrawer({ submission: s, open, onClose, onUpdate,
                 </div>
               ) : (
                 <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground mb-1">Reason for rejection (min 10 characters)</p>
                   <textarea
                     value={rejectReason}
                     onChange={(e) => setRejectReason(e.target.value)}
-                    placeholder="Reason for rejection…"
+                    placeholder="Reason for rejection (required)…"
                     rows={2}
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring resize-none"
                     autoFocus
@@ -167,7 +168,8 @@ export function SubmissionDetailDrawer({ submission: s, open, onClose, onUpdate,
                     </button>
                     <button
                       onClick={() => { onUpdate(s.id, { status: "Rejected", notes: rejectReason || s.notes }); setRejectMode(false); }}
-                      className="flex-1 h-8 rounded-md bg-destructive text-destructive-foreground text-sm font-medium hover:opacity-90 transition-opacity duration-fast"
+                      disabled={rejectReason.trim().length < 10}
+                      className="flex-1 h-8 rounded-md bg-destructive text-destructive-foreground text-sm font-medium hover:opacity-90 transition-opacity duration-fast disabled:opacity-50"
                     >
                       Confirm Reject
                     </button>

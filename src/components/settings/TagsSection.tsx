@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 export function TagsSection() {
   const { data: tags = [], isLoading } = useTags();
@@ -31,7 +31,7 @@ export function TagsSection() {
           setAdding(false);
           setNewName("");
           setNewColor("#8b5cf6");
-          toast({ title: "Tag created" });
+          toast.success("Tag created");
         },
       }
     );
@@ -108,7 +108,7 @@ export function TagsSection() {
                 deleteTag.mutate(deleteTarget.id, {
                   onSuccess: () => {
                     setDeleteTarget(null);
-                    toast({ title: "Tag deleted" });
+                    toast.success("Tag deleted");
                   },
                 });
               }}

@@ -9,7 +9,7 @@ import {
   AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
   AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 
 const ROLE_COLORS: Record<string, string> = {
@@ -39,7 +39,7 @@ export function TeamMembersSection() {
         onSuccess: () => {
           setInviteOpen(false);
           setForm({ name: "", email: "", role: "recruiter", password: "" });
-          toast({ title: `Invitation sent to ${form.email}` });
+          toast.success(`Invitation sent to ${form.email}`);
         },
       }
     );
@@ -176,7 +176,7 @@ export function TeamMembersSection() {
                 deactivateUser.mutate(deactivateTarget.id, {
                   onSuccess: () => {
                     setDeactivateTarget(null);
-                    toast({ title: `${deactivateTarget.name} has been deactivated` });
+                    toast.success(`${deactivateTarget.name} has been deactivated`);
                   },
                 });
               }}
