@@ -50,11 +50,12 @@ export function TagsSection() {
       </div>
 
       {adding ? (
-        <div className="flex items-center gap-2 mt-2 px-2" style={{ height: '34px' }}>
-          <ColorPalettePicker color={newColor} onChange={setNewColor} />
+        <div className="flex items-center gap-3 mt-2 px-2" style={{ height: '40px' }}>
+          <GripVertical style={{ width: '14px', height: '14px', color: '#e9eaec', flexShrink: 0 }} />
+          <ColorPalettePicker color={newColor} onChange={setNewColor} size={16} />
           <input autoFocus value={newName} onChange={(e) => setNewName(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") handleAdd(); if (e.key === "Escape") setAdding(false); }}
-            placeholder="Tag name" style={{ flex: 1, height: '32px', border: '1px solid #e2e3e6', borderRadius: '6px', padding: '0 10px', fontSize: '13px', color: '#1a1a1a' }}
+            placeholder="Tag name" style={{ flex: 1, height: '32px', border: '1px solid #e2e3e6', borderRadius: '6px', padding: '0 10px', fontSize: '14px', color: '#1a1a1a' }}
             onFocus={(e) => { e.currentTarget.style.borderColor = '#7c3aed'; e.currentTarget.style.boxShadow = '0 0 0 3px #7c3aed18'; }}
             onBlur={(e) => { e.currentTarget.style.borderColor = '#e2e3e6'; e.currentTarget.style.boxShadow = 'none'; }}
           />
@@ -62,8 +63,9 @@ export function TagsSection() {
           <button onClick={() => setAdding(false)} style={{ height: '28px', padding: '0 10px', borderRadius: '6px', border: '1px solid #e2e3e6', fontSize: '13px', color: '#374151' }}>Cancel</button>
         </div>
       ) : (
-        <button onClick={() => setAdding(true)} className="flex items-center gap-1 mt-2 transition-colors hover:bg-[#f3f4f6] rounded-md" style={{ height: '28px', padding: '0 10px', fontSize: '13px', color: '#7c3aed' }}>
-          <Plus style={{ width: '14px', height: '14px' }} /> Add Tag
+        <button onClick={() => setAdding(true)} className="flex items-center gap-1.5 mt-3 w-full transition-colors hover:bg-[#f3f4f6] rounded-md"
+          style={{ height: '40px', padding: '0 12px', fontSize: '13px', color: '#7c3aed', border: '1px dashed #d1d5db', borderRadius: '6px', justifyContent: 'center' }}>
+          <Plus style={{ width: '14px', height: '14px' }} /> Add a tag
         </button>
       )}
 
