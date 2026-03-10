@@ -60,8 +60,16 @@ export function useEvaluateResume() {
   return useMutation({
     mutationFn: async ({ jobId, formData }: { jobId: string; formData: FormData }) => {
       await new Promise(r => setTimeout(r, 1000));
-      // Simulate evaluation result
-      return { matchPercentage: Math.floor(Math.random() * 40) + 60, matchBand: "Good" };
+      return {
+        matchPercentage: Math.floor(Math.random() * 40) + 60,
+        matchBand: "Good",
+        candidateName: "New Candidate",
+        candidateEmail: "candidate@example.com",
+        candidateTitle: "Developer",
+        skillsMatched: ["React", "TypeScript", "Git"],
+        skillsMissing: ["GraphQL", "AWS"],
+        summary: "Good technical fit with solid frontend experience. Communication skills need further evaluation.",
+      };
     },
     onSuccess: (_d, vars) => {
       qc.invalidateQueries({ queryKey: ["matches", vars.jobId] });
