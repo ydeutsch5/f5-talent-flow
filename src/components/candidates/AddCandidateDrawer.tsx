@@ -3,7 +3,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useCreateCandidateFull } from "@/hooks/useCandidates";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 const schema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100),
