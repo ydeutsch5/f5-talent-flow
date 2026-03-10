@@ -3,12 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
 
+const DEMO_USER = {
+  id: "demo-admin-001",
+  name: "Demo Admin",
+  email: "demo@f5hiring.com",
+  role: "admin" as const,
+};
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const setUser = useAuthStore((s) => s.setUser);
+  const setDemoMode = useAuthStore((s) => s.setDemoMode);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,6 +32,12 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDemo = () => {
+    setUser(DEMO_USER);
+    setDemoMode(true);
+    navigate("/dashboard", { replace: true });
   };
 
   return (
@@ -71,6 +85,19 @@ export default function Login() {
             className="w-full h-9 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity duration-fast disabled:opacity-50"
           >
             {loading ? "Signing in…" : "Sign In"}
+          </button>
+
+          <div className="relative my-2">
+            <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
+            <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">or</span></div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleDemo}
+            className="w-full h-9 rounded-md border border-input bg-background text-sm font-medium text-foreground hover:bg-accent transition-colors duration-fast"
+          >
+            View Demo
           </button>
         </div>
       </form>

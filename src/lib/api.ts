@@ -8,7 +8,17 @@ async function request(method: string, path: string, body?: any, isForm = false)
     body: isForm ? body : body ? JSON.stringify(body) : undefined,
   };
 
-  const res = await fetch(`${BASE}${path}`, opts);
+  let res: Response;
+  try {
+    res = await fetch(`${BASE}${path}`, opts);
+  } catch {
+    // Network error — backend unreachable; return empty mock data
+    const { useAuthStore } = await import("@/stores/authStore");
+    if (useAuthStore.getState().isDemoMode) {
+      return [];
+    }
+    throw new Error("Backend unreachable");
+  }
 
   if (res.status === 401) {
     const { useAuthStore } = await import("@/stores/authStore");
