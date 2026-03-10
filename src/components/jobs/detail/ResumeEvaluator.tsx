@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { ChevronDown, ChevronUp, Upload, Check } from "lucide-react";
 import { useEvaluateResume, useCreateCandidate } from "@/hooks/useMatches";
 import { getMatchColor } from "./matchUtils";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 interface ResumeEvaluatorProps {
   jobId: string;
