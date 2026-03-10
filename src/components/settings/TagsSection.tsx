@@ -108,7 +108,7 @@ function TagRow({ tag, onUpdateColor, onUpdateName, onDelete }: { tag: Tag & { _
       onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
     >
       <GripVertical style={{ width: '14px', height: '14px', color: '#d1d5db', cursor: 'grab', flexShrink: 0 }} />
-      <ColorPalettePicker color={tag.color} onChange={onUpdateColor} />
+      <ColorPalettePicker color={tag.color} onChange={onUpdateColor} size={16} />
       {editing ? (
         <input ref={inputRef} value={draft} onChange={(e) => setDraft(e.target.value)} onBlur={save}
           onKeyDown={(e) => { if (e.key === "Enter") save(); if (e.key === "Escape") { setEditing(false); setDraft(tag.name); } }}
