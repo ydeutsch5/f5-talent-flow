@@ -3,7 +3,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useCreateJob, type JobStatus } from "@/hooks/useJobs";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 const schema = z.object({
   roleTitle: z.string().min(1, "Role title is required"),
