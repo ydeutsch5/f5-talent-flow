@@ -37,11 +37,11 @@ export function AddCandidateDrawer({ open, onClose }: AddCandidateDrawerProps) {
   const onSubmit = async (data: FormValues) => {
     try {
       await create.mutateAsync(data);
-      toast({ title: "Candidate added", description: `${data.name} has been created.` });
+      toast.success("Candidate added");
       reset();
       onClose();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast.error(err.message, { duration: 8000 });
     }
   };
 

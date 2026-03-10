@@ -124,7 +124,8 @@ export function SubmissionRow({ submission: s, onUpdate, onOpenDetail, onOpenCan
                     </button>
                     <button
                       onClick={handleReject}
-                      className="flex-1 h-7 rounded bg-destructive text-destructive-foreground text-xs font-medium hover:opacity-90 transition-opacity duration-fast"
+                      disabled={rejectReason.trim().length < 10}
+                      className="flex-1 h-7 rounded bg-destructive text-destructive-foreground text-xs font-medium hover:opacity-90 transition-opacity duration-fast disabled:opacity-50"
                     >
                       Confirm Reject
                     </button>

@@ -168,7 +168,8 @@ export function SubmissionDetailDrawer({ submission: s, open, onClose, onUpdate,
                     </button>
                     <button
                       onClick={() => { onUpdate(s.id, { status: "Rejected", notes: rejectReason || s.notes }); setRejectMode(false); }}
-                      className="flex-1 h-8 rounded-md bg-destructive text-destructive-foreground text-sm font-medium hover:opacity-90 transition-opacity duration-fast"
+                      disabled={rejectReason.trim().length < 10}
+                      className="flex-1 h-8 rounded-md bg-destructive text-destructive-foreground text-sm font-medium hover:opacity-90 transition-opacity duration-fast disabled:opacity-50"
                     >
                       Confirm Reject
                     </button>
