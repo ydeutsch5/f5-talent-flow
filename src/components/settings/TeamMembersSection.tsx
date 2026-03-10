@@ -39,7 +39,7 @@ export function TeamMembersSection() {
         onSuccess: () => {
           setInviteOpen(false);
           setForm({ name: "", email: "", role: "recruiter", password: "" });
-          toast({ title: `Invitation sent to ${form.email}` });
+          toast.success(`Invitation sent to ${form.email}`);
         },
       }
     );
