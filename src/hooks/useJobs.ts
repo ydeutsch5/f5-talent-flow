@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { mockStore } from "@/lib/mockData";
+import { toast } from "sonner";
 
 export interface JobStatus {
   id: string;
@@ -25,38 +26,52 @@ export interface Job {
 export function useJobs() {
   return useQuery<Job[]>({
     queryKey: ["jobs"],
-    queryFn: () => api.get("/jobs"),
+    queryFn: () => mockStore.getJobs() as Job[],
+    staleTime: Infinity,
   });
 }
 
 export function useJobStatuses() {
   return useQuery<JobStatus[]>({
     queryKey: ["job-statuses"],
-    queryFn: () => api.get("/job-statuses"),
+    queryFn: () => mockStore.getJobStatuses(),
+    staleTime: Infinity,
   });
 }
 
 export function useUpdateJob() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Job> }) =>
-      api.put(`/jobs/${id}`, data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["jobs"] }),
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Job> }) => {
+      await new Promise(r => setTimeout(r, 350));
+      mockStore.updateJob(id, data);
+      return data;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["jobs"] }); toast.success("Job updated"); },
+    onError: (e: Error) => toast.error(e.message, { duration: 8000 }),
   });
 }
 
 export function useCreateJob() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: Record<string, any>) => api.post("/jobs", data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["jobs"] }),
+    mutationFn: async (data: Record<string, any>) => {
+      await new Promise(r => setTimeout(r, 350));
+      return mockStore.createJob(data);
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["jobs"] }); toast.success("Job created"); },
+    onError: (e: Error) => toast.error(e.message, { duration: 8000 }),
   });
 }
 
 export function useDeleteJob() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => api.del(`/jobs/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["jobs"] }),
+    mutationFn: async (id: string) => {
+      await new Promise(r => setTimeout(r, 350));
+      mockStore.deleteJob(id);
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["jobs"] }); toast.success("Job deleted"); },
+    onError: (e: Error) => toast.error(e.message, { duration: 8000 }),
   });
 }

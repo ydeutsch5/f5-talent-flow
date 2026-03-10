@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { mockStore } from "@/lib/mockData";
 
 export interface RecentActivityEntry {
   id: string;
@@ -13,6 +13,7 @@ export interface RecentActivityEntry {
 export function useRecentActivity() {
   return useQuery<RecentActivityEntry[]>({
     queryKey: ["recent-activity"],
-    queryFn: () => api.get("/activity/recent"),
+    queryFn: () => mockStore.getRecentActivity() as RecentActivityEntry[],
+    staleTime: Infinity,
   });
 }

@@ -1,5 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import { mockStore } from "@/lib/mockData";
 
 export interface CandidateStatus {
   id: string;
@@ -11,6 +11,7 @@ export interface CandidateStatus {
 export function useCandidateStatuses() {
   return useQuery<CandidateStatus[]>({
     queryKey: ["candidate-statuses"],
-    queryFn: () => api.get("/candidate-statuses"),
+    queryFn: () => mockStore.getCandidateStatuses(),
+    staleTime: Infinity,
   });
 }
